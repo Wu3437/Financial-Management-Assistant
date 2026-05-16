@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>财智通 - 二维码体验</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.3);
+            max-width: 450px;
+            width: 100%;
+        }
+        .logo {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        h1 {
+            color: #2d3748;
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+        .subtitle {
+            color: #718096;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+        .qr-container {
+            background: white;
+            border: 8px solid #f7fafc;
+            border-radius: 16px;
+            padding: 15px;
+            display: inline-block;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .qr-container img {
+            display: block;
+            border-radius: 8px;
+        }
+        .info-box {
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 25px;
+            text-align: left;
+        }
+        .info-box h3 {
+            color: #2d3748;
+            font-size: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .info-box p {
+            color: #4a5568;
+            font-size: 13px;
+            line-height: 1.7;
+            margin: 8px 0;
+            padding-left: 24px;
+        }
+        .info-box .highlight {
+            background: #ebf8ff;
+            color: #2b6cb0;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .footer {
+            margin-top: 25px;
+            color: #a0aec0;
+            font-size: 12px;
+        }
+        .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="logo">🎯</div>
+        <h1>财智通</h1>
+        <p class="subtitle">大学生理财陪伴AI智能体</p>
+        
+        <div class="qr-container">
+            <!-- 使用在线API生成二维码 -->
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https://tinyurl.com/caizhitong" alt="财智通二维码">
+        </div>
+        
+        <div class="info-box">
+            <h3>📱 使用方式</h3>
+            <p>1. 打开手机扫描上方二维码</p>
+            <p>2. 直接访问智能体体验页面</p>
+            <p>3. 无需连接同一网络</p>
+        </div>
+        
+        <div class="info-box">
+            <h3>🔗 访问地址</h3>
+            <p>短链接：<span class="highlight">https://tinyurl.com/caizhitong</span></p>
+            <p>（已使用短链接服务确保长期有效）</p>
+        </div>
+        
+        <div class="footer">
+            扫码体验智能体全部功能
+        </div>
+        <div class="badge">独立二维码 · 公共访问</div>
+    </div>
+    
+    <script>
+        // 可选：添加二维码刷新功能
+        function refreshQR() {
+            const img = document.querySelector('.qr-container img');
+            img.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https://tinyurl.com/caizhitong&t=${Date.now()}`;
+        }
+    </script>
+</body>
+</html>

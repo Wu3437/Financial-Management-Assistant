@@ -1,0 +1,3188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大学生理财陪伴AI - 财智通</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .card-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .card-subtitle {
+            font-size: 0.85rem;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        .card.positive .card-value { color: #10b981; }
+        .card.warning .card-value { color: #f59e0b; }
+        .card.danger .card-value { color: #ef4444; }
+        .card.info .card-value { color: #3b82f6; }
+
+        .chart-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            color: #333;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .category-chart {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .category-bar {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .category-name {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .bar-container {
+            height: 150px;
+            background: #f3f4f6;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            border-radius: 10px;
+            transition: height 0.5s ease;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 5px;
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .bar-fill.food { background: linear-gradient(180deg, #f59e0b, #d97706); }
+        .bar-fill.transport { background: linear-gradient(180deg, #3b82f6, #2563eb); }
+        .bar-fill.shopping { background: linear-gradient(180deg, #ec4899, #db2777); }
+        .bar-fill.entertainment { background: linear-gradient(180deg, #8b5cf6, #7c3aed); }
+        .bar-fill.study { background: linear-gradient(180deg, #10b981, #059669); }
+        .bar-fill.living { background: linear-gradient(180deg, #06b6d4, #0891b2); }
+
+        .progress-ring {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: conic-gradient(#10b981 0%, #10b981 var(--progress), #e5e7eb var(--progress));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .progress-ring::before {
+            content: '';
+            position: absolute;
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: white;
+        }
+
+        .progress-text {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .progress-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .progress-label {
+            font-size: 0.75rem;
+            color: #666;
+        }
+
+        .tips-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .tips-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .tip-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .tip-icon {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .tip-text {
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .chat-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 10px;
+            margin-bottom: 20px;
+        }
+
+        .chat-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        .chat-container::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+
+        .chat-message {
+            max-width: 80%;
+            padding: 15px 20px;
+            border-radius: 20px;
+            position: relative;
+            word-wrap: break-word;
+        }
+
+        .chat-message.user {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 5px;
+        }
+
+        .chat-message.bot {
+            background: #f1f5f9;
+            color: #333;
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+        }
+
+        .shortcuts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+            justify-content: center;
+        }
+
+        .shortcut-btn {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            color: #667eea;
+            border: 1px solid #cbd5e1;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .shortcut-btn:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 25px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .chat-input input:focus {
+            border-color: #667eea;
+        }
+
+        .chat-input button {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .chat-input button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .modal {
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            position: relative;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-content .close {
+            position: absolute;
+            right: 15px;
+            top: 15px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #aaa;
+            transition: color 0.3s;
+        }
+
+        .modal-content .close:hover {
+            color: #333;
+        }
+
+        .modal-content h3 {
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .modal-content input:focus {
+            border-color: #667eea;
+        }
+
+        .modal-content button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .modal-content button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .finance-terms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+        }
+
+        .finance-term-btn {
+            padding: 10px;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            text-align: left;
+        }
+
+        .finance-term-btn:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .term-explanation {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            .card-value {
+                font-size: 1.5rem;
+            }
+
+            .chat-message {
+                max-width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎯 财智通</h1>
+            <p>陪伴你养成良好的理财习惯</p>
+        </header>
+
+        <div class="dashboard">
+            <div class="card positive">
+                <div class="card-icon">💰</div>
+                <div class="card-title">本月支出</div>
+                <div class="card-value" id="total-spent">¥0.00</div>
+                <div class="card-subtitle">实时更新</div>
+            </div>
+
+            <div class="card info">
+                <div class="card-icon">📊</div>
+                <div class="card-title">月度预算</div>
+                <div class="card-value" id="budget">¥0</div>
+                <div class="card-subtitle" id="budget-usage">未设置</div>
+            </div>
+
+            <div class="card warning">
+                <div class="card-icon">💹</div>
+                <div class="card-title">储蓄率</div>
+                <div class="card-value" id="saving-rate">0%</div>
+                <div class="card-subtitle">目标: 30%</div>
+            </div>
+
+            <div class="card positive">
+                <div class="card-icon">🏦</div>
+                <div class="card-title">应急金</div>
+                <div class="card-value" id="emergency-fund">¥0</div>
+                <div class="card-subtitle">建议: 3个月生活费</div>
+            </div>
+        </div>
+
+        <div class="chart-section">
+            <h2 class="section-title">📈 消费分类统计</h2>
+            <div class="category-chart">
+                <div class="category-bar">
+                    <div class="category-name">餐饮</div>
+                    <div class="bar-container">
+                        <div class="bar-fill food" id="cat-food" style="height: 0%;">¥0</div>
+                    </div>
+                </div>
+                <div class="category-bar">
+                    <div class="category-name">交通</div>
+                    <div class="bar-container">
+                        <div class="bar-fill transport" id="cat-transport" style="height: 0%;">¥0</div>
+                    </div>
+                </div>
+                <div class="category-bar">
+                    <div class="category-name">购物</div>
+                    <div class="bar-container">
+                        <div class="bar-fill shopping" id="cat-shopping" style="height: 0%;">¥0</div>
+                    </div>
+                </div>
+                <div class="category-bar">
+                    <div class="category-name">娱乐</div>
+                    <div class="bar-container">
+                        <div class="bar-fill entertainment" id="cat-entertainment" style="height: 0%;">¥0</div>
+                    </div>
+                </div>
+                <div class="category-bar">
+                    <div class="category-name">学习</div>
+                    <div class="bar-container">
+                        <div class="bar-fill study" id="cat-study" style="height: 0%;">¥0</div>
+                    </div>
+                </div>
+                <div class="category-bar">
+                    <div class="category-name">生活</div>
+                    <div class="bar-container">
+                        <div class="bar-fill living" id="cat-living" style="height: 0%;">¥0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-section">
+            <h2 class="section-title">🎯 攒钱目标进度</h2>
+            <div id="goals-container" style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 30px;">
+                <div style="text-align: center; opacity: 0.5;">
+                    <div class="progress-ring" style="--progress: 0%;">
+                        <div class="progress-text">
+                            <div class="progress-value">-</div>
+                            <div class="progress-label">暂无目标</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tips-section">
+            <h2 class="section-title">💡 理财小贴士</h2>
+            <div class="tips-list">
+                <div class="tip-card">
+                    <div class="tip-icon">🎯</div>
+                    <div class="tip-text">先存后花：发生活费后先存一部分，剩下的再花</div>
+                </div>
+                <div class="tip-card">
+                    <div class="tip-icon">💰</div>
+                    <div class="tip-text">应急金：建议预留3-6个月生活费作为应急储备</div>
+                </div>
+                <div class="tip-card">
+                    <div class="tip-icon">📝</div>
+                    <div class="tip-text">记账习惯：每天花1分钟记录支出，月底复盘</div>
+                </div>
+                <div class="tip-card">
+                    <div class="tip-icon">⚠️</div>
+                    <div class="tip-text">远离高息诱惑：年化超过15%的承诺要极度警惕</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-section">
+            <h2 class="section-title">💬 智能对话</h2>
+            <div class="chat-container" id="chat-container">
+                <div class="chat-message bot">你好！我是财智通，有什么可以帮到你吗？</div>
+                <div class="chat-message bot">📖 你可以尝试：<br>- 记录消费："吃饭花了20元"<br>- 设置预算："设置预算3000元"<br>- 创建目标："攒钱买手机目标5000元"<br>- 理财知识："什么是公募基金"</div>
+            </div>
+            <div class="shortcuts">
+                <button class="shortcut-btn" onclick="showBudgetModal()">💰 设置预算</button>
+                <button class="shortcut-btn" onclick="showGoalModal()">🎯 创建目标</button>
+                <button class="shortcut-btn" onclick="showFinanceTips()">📚 理财知识</button>
+                <button class="shortcut-btn" onclick="sendQuickMessage('我的状态')">📊 财务状态</button>
+                <button class="shortcut-btn" onclick="sendQuickMessage('计算储蓄率')">💹 储蓄率</button>
+            </div>
+            <div class="chat-input">
+                <input type="text" id="user-input" placeholder="输入你的问题...">
+                <button onclick="sendMessage()">发送</button>
+            </div>
+        </div>
+
+        <div id="budget-modal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('budget-modal')">&times;</span>
+                <h3>💰 设置月度预算</h3>
+                <input type="number" id="budget-input" placeholder="请输入预算金额（元）" min="0">
+                <button onclick="setBudget()">确认设置</button>
+            </div>
+        </div>
+
+        <div id="goal-modal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('goal-modal')">&times;</span>
+                <h3>🎯 创建攒钱目标</h3>
+                <input type="text" id="goal-name" placeholder="目标名称（如：买手机）">
+                <input type="number" id="goal-amount" placeholder="目标金额（元）" min="0">
+                <button onclick="createGoal()">确认创建</button>
+            </div>
+        </div>
+
+        <div id="finance-modal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('finance-modal')">&times;</span>
+                <h3>📚 理财知识</h3>
+                <input type="text" id="finance-input" placeholder="请输入关键词，如：基金、股票、定投..." onkeyup="if(event.keyCode==13) searchFinanceTerm()">
+                <button onclick="searchFinanceTerm()">搜索</button>
+                <div id="finance-result"></div>
+                <div id="finance-suggestions" style="margin-top: 15px; display: none;">
+                    <p style="font-size: 0.9rem; color: #666; margin-bottom: 8px;">💡 热门关键词：</p>
+                    <div class="finance-terms-grid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const memory = {
+            monthlyBudget: 0,
+            spentAmount: 0,
+            savingGoals: [],
+            spendingHistory: [],
+            incomeHistory: [],
+            emergencyFund: 0
+        };
+
+        const financeTerms = {
+            '公募基金': '就像和一群朋友一起拼车——大家把钱凑起来，请专业司机（基金经理）开车，一起到达目的地（赚钱）。',
+            '指数基金': '跟着整个车队一起走，复制整个市场的表现，比如沪深300指数基金。',
+            '定投': '定期定额投资，每个月固定存一笔钱到基金里，长期下来可以平摊成本。',
+            '复利': '利滚利，利息也会产生新的利息，爱因斯坦说这是世界第八大奇迹！',
+            '分散投资': '不要把鸡蛋放在同一个篮子里，降低风险。',
+            '股票': '公司的所有权凭证，买股票就是成为公司的小股东。',
+            '债券': '相当于你把钱借给别人，到期后连本带息归还。',
+            'ETF': '交易型开放式指数基金，可以像股票一样在交易所买卖。',
+            '市盈率': '股价与每股收益的比率，用来判断股价是否合理。',
+            '货币基金': '主要投资于短期货币工具的基金，风险低、流动性强，像活期存款但收益更高。',
+            '债券基金': '主要投资于债券的基金，风险较低，收益相对稳定。',
+            '混合基金': '同时投资于股票和债券的基金，平衡风险与收益。',
+            'QDII基金': '投资于境外市场的基金，可以让国内投资者参与海外投资。',
+            'LOF基金': '上市型开放式基金，可以在交易所交易也可以申购赎回。',
+            '净值': '每份基金的价值，是计算基金收益的基础。',
+            '申购': '向基金公司购买基金份额的行为。',
+            '赎回': '把持有的基金份额卖回给基金公司的行为。',
+            '分红': '基金将收益的一部分以现金或份额的形式分给投资者。',
+            '手续费': '购买或赎回基金时需要支付的费用。',
+            '管理费': '基金公司管理基金收取的费用。',
+            '托管费': '托管银行保管基金资产收取的费用。',
+            '印花税': '对经济活动和经济交往中书立、领受具有法律效力的凭证的行为所征收的一种税。',
+            '资产配置': '根据投资目标和风险承受能力，将资金分配到不同资产类别。',
+            '风险偏好': '投资者对风险的接受程度，通常分为保守型、稳健型、积极型。',
+            '流动性': '资产能够以合理价格迅速变现的能力。',
+            '基本面分析': '通过分析公司财务状况、行业前景等因素来评估投资价值。',
+            '技术分析': '通过分析历史价格和交易量来预测未来走势。',
+            'K线图': '记录股票或基金价格变动的图表，包含开盘价、收盘价、最高价、最低价。',
+            '牛市': '市场行情普遍看涨，持续时间较长的上升趋势。',
+            '熊市': '市场行情普遍看跌，持续时间较长的下降趋势。',
+            '震荡市': '市场价格在一定区间内上下波动，没有明显的上升或下降趋势。',
+            '抄底': '在市场价格较低时买入，期望价格回升获利。',
+            '追涨': '在市场价格上涨时买入，期望价格继续上涨。',
+            '止损': '当投资亏损达到一定程度时卖出，以防止进一步损失。',
+            '止盈': '当投资盈利达到目标时卖出，锁定收益。',
+            '基本面': '公司的财务状况、盈利能力、行业地位等基本因素。',
+            '市盈率PE': '股价与每股收益的比率，衡量股价是否合理。',
+            '市净率PB': '股价与每股净资产的比率，衡量股价相对于净资产的高低。',
+            '股息率': '股息与股价的比率，衡量投资的现金回报。',
+            'ROE': '净资产收益率，衡量公司运用净资产盈利的能力。',
+            'GDP': '国内生产总值，衡量一个国家或地区的经济规模。',
+            'CPI': '消费者物价指数，衡量通货膨胀水平。',
+            '货币政策': '中央银行通过调节货币供应量来影响经济的政策。',
+            '财政政策': '政府通过财政支出和税收来影响经济的政策。',
+            '通货膨胀': '货币供应量超过经济实际需要，导致物价普遍上涨。',
+            '通货紧缩': '货币供应量不足，导致物价普遍下降。',
+            '利率': '借款的成本或存款的收益，是重要的经济指标。',
+            '汇率': '两种货币之间的兑换比率。',
+            '国债': '国家发行的债券，安全性高，被称为金边债券。',
+            '企业债': '企业发行的债券，风险和收益高于国债。',
+            '可转债': '可以转换为股票的债券，兼具债券和股票的特点。',
+            'REITs': '房地产投资信托基金，投资于房地产项目，定期分红。',
+            '打新': '参与新股申购，期望在上市后获得收益。',
+            '破发': '新股上市首日收盘价低于发行价。',
+            'IPO': '首次公开募股，公司第一次向公众发行股票。',
+            '配股': '上市公司向现有股东按比例配售新股。',
+            '增发': '上市公司向特定投资者发行新股融资。',
+            '股权': '股东对公司的所有权，享有相应的权利和利益。',
+            '股息': '公司根据盈利情况向股东分配的利润。',
+            '红利': '公司向股东分配的利润，通常以现金形式发放。',
+            '拆股': '将一股拆分为多股，降低股价，增加流动性。',
+            '合并': '将多股合并为一股，提高股价。',
+            '除权': '股票分红或配股后，股价相应下调。',
+            '除息': '股票发放股息后，股价相应下调。',
+            '填权': '除权后股价上涨，填补除权缺口。',
+            '贴权': '除权后股价下跌，低于除权价。',
+            '龙头股': '行业中具有领先地位、业绩优良的股票。',
+            '题材股': '具有特定概念或题材的股票，容易受到市场炒作。',
+            '蓝筹股': '业绩稳定、规模较大的公司股票，通常风险较低。',
+            '成长股': '具有较高增长潜力的公司股票，通常市盈率较高。',
+            '价值股': '股价相对内在价值被低估的股票。',
+            'ST股': '特别处理的股票，通常是连续亏损的公司。',
+            '退市': '股票从交易所摘牌，不再公开交易。',
+            '停牌': '股票暂时停止交易，通常是因为重大事项。',
+            '复牌': '停牌的股票恢复交易。',
+            '涨停板': '股票价格上涨达到当日涨幅限制。',
+            '跌停板': '股票价格下跌达到当日跌幅限制。',
+            '成交量': '一定时间内股票的交易数量。',
+            '成交额': '一定时间内股票的交易金额。',
+            '换手率': '一定时间内股票的交易占流通股的比例。',
+            '量比': '衡量成交量相对于过去5日平均成交量的倍数。',
+            '委比': '衡量买卖盘相对强弱的指标。',
+            '内盘': '以买入价成交的成交量。',
+            '外盘': '以卖出价成交的成交量。',
+            '盘口': '当前买卖盘的挂单情况。',
+            '盘整': '股价在一定区间内波动，没有明显趋势。',
+            '跳空': '股价开盘价高于或低于前收盘价，形成价格缺口。',
+            '缺口': '股价在没有交易的价格区间形成的空白。',
+            '支撑位': '股价下跌到某一位置时受到支撑，难以继续下跌。',
+            '阻力位': '股价上涨到某一位置时遇到阻力，难以继续上涨。',
+            '均线': '一定时期内股价的平均值，用于判断趋势。',
+            'MACD': '指数平滑异同移动平均线，用于判断买卖信号。',
+            'KDJ': '随机指标，用于判断超买超卖。',
+            'RSI': '相对强弱指标，用于判断超买超卖。',
+            '布林带': '由三条轨道组成的指标，用于判断价格波动区间。',
+            '波浪理论': '认为股价走势遵循一定的波浪形态。',
+            '道氏理论': '认为股价走势包含主要趋势、次要趋势和短期波动。',
+            '江恩理论': '基于数学和几何原理的技术分析方法。',
+            '缠论': '一种复杂的技术分析理论，强调走势的递归结构。',
+            '对冲': '通过同时进行相反方向的交易来降低风险。',
+            '套利': '利用不同市场或不同时间的价格差异获利。',
+            '做空': '先卖出后买入，期望股价下跌获利。',
+            '做多': '先买入后卖出，期望股价上涨获利。',
+            '杠杆': '通过借入资金来放大投资收益（或亏损）。',
+            '保证金': '进行杠杆交易时需要缴纳的押金。',
+            '爆仓': '保证金不足以维持持仓，被强制平仓。',
+            '平仓': '了结持仓，实现盈利或亏损。',
+            '建仓': '开始建立持仓。',
+            '持仓': '持有的投资头寸。',
+            '头寸': '投资者持有的投资数量。',
+            '踏空': '在股价上涨前卖出，错失上涨机会。',
+            '套牢': '买入后股价下跌，无法卖出止损。',
+            '解套': '被套牢后股价回升到买入价以上。',
+            '割肉': '在亏损状态下卖出，认赔离场。',
+            '补仓': '在股价下跌后继续买入，降低平均成本。',
+            '减仓': '减少持仓数量。',
+            '清仓': '卖出全部持仓。',
+            '满仓': '将所有资金都用于投资。',
+            '空仓': '没有任何持仓。',
+            '半仓': '将一半资金用于投资。',
+            '仓位': '投资资金占总资金的比例。',
+            '定投': '定期定额投资，分散买入成本。',
+            '价值投资': '基于公司内在价值进行投资的策略。',
+            '成长投资': '投资于具有高增长潜力的公司。',
+            '趋势投资': '跟随市场趋势进行投资。',
+            '波段操作': '在股价波动中低买高卖，获取差价。',
+            '长期投资': '持有投资标的较长时间，通常数年以上。',
+            '短期投资': '持有投资标的较短时间，通常数天或数周。',
+            '中期投资': '持有投资标的中等时间，通常数月。',
+            '分散投资': '将资金投资于不同的标的，降低风险。',
+            '集中投资': '将资金集中投资于少数标的。',
+            '逆向投资': '与市场主流观点相反，在市场低迷时买入。',
+            '顺势投资': '跟随市场趋势进行投资。',
+            '量化投资': '利用数学模型和计算机程序进行投资决策。',
+            '算法交易': '利用计算机算法自动执行交易。',
+            '高频交易': '利用高速计算机进行大量短期交易。',
+            '被动投资': '跟踪市场指数，不主动选股。',
+            '主动投资': '通过研究分析主动选择投资标的。',
+            'ESG投资': '考虑环境、社会和治理因素的投资。',
+            '社会责任投资': '投资于具有社会责任感的公司。',
+            '绿色投资': '投资于环保和可持续发展相关的项目。',
+            '养老投资': '为退休生活进行的长期投资。',
+            '教育投资': '为子女教育进行的投资。',
+            '应急储备': '为应对突发事件准备的资金。',
+            '流动性管理': '合理安排资金的流动性，满足日常需求。',
+            '资产负债管理': '平衡资产和负债，管理财务风险。',
+            '财务规划': '制定长期的财务目标和实现计划。',
+            '税务筹划': '合法合理地减少税负。',
+            '保险规划': '通过保险转移风险。',
+            '信托': '一种财产管理制度，委托人将财产委托给受托人管理。',
+            '基金定投': '定期定额购买基金，是一种常见的投资方式。',
+            '国债逆回购': '通过国债回购市场进行短期融资的方式。',
+            '银行理财': '银行发行的理财产品，风险相对较低。',
+            '券商理财': '证券公司发行的理财产品。',
+            '信托理财': '信托公司发行的理财产品，通常门槛较高。',
+            'P2P理财': '通过网络平台进行的个人借贷，风险较高。',
+            '众筹': '通过互联网向公众筹集资金。',
+            '比特币': '一种虚拟加密货币，价格波动较大。',
+            '区块链': '一种分布式账本技术，是比特币等加密货币的基础。',
+            'NFT': '非同质化代币，用于表示数字资产的所有权。',
+            '元宇宙': '虚拟世界的概念，融合了虚拟现实、区块链等技术。',
+            '数字资产': '以数字形式存在的资产，如加密货币、数字艺术品等。',
+            
+            '大学生理财': '大学生理财的核心是建立良好的消费习惯和储蓄意识，从低风险产品开始入门。',
+            '生活费管理': '合理规划每月生活费，建议采用"50/30/20法则"：50%必要支出、30%灵活消费、20%储蓄。',
+            '应急金': '建议预留3-6个月的生活费作为应急金，放在流动性好的货币基金中。',
+            '兼职收入': '兼职收入建议分配：50%储蓄、30%消费、20%学习投资（如买书、课程）。',
+            '学生投资': '大学生适合的投资方式：货币基金、指数基金定投、国债逆回购等低风险产品。',
+            '基金入门': '新手建议从指数基金开始，如沪深300、创业板指数，分散投资风险。',
+            '定投优势': '定期定额投资可以平均成本，降低择时难度，适合新手和上班族。',
+            '风险承受能力': '大学生风险承受能力较高，但建议只用闲钱投资，不要影响生活。',
+            '投资心态': '投资是长期过程，不要被短期波动影响，保持耐心和理性。',
+            '理财目标': '常见的大学生理财目标：旅行、买数码产品、毕业应急金、创业启动资金。',
+            '复利效应': '爱因斯坦称复利为"世界第八大奇迹"，越早开始投资，复利效果越明显。',
+            '先存后花': '发生活费后先存一部分，剩下的再花，避免月光。',
+            '记账习惯': '每天记录支出，每周复盘，每月总结，了解钱花在哪里。',
+            '消费陷阱': '警惕校园贷、高收益骗局、冲动消费，理性对待促销活动。',
+            '毕业理财': '毕业前建议：建立应急金、了解五险一金、制定职业发展规划。'
+        };
+
+        const expenseCategories = {
+            food: ['外卖', '吃饭', '午餐', '晚餐', '早餐', '奶茶', '咖啡', '零食', '水果', '饮料', '火锅', '聚餐', '宵夜', '烧烤', '麻辣烫', '食堂', '汉堡', '披萨', '炸鸡', '面条', '米饭', '泡面'],
+            transport: ['打车', '地铁', '公交', '滴滴', '车费', '加油', '停车', '高铁', '火车', '机票'],
+            shopping: ['购物', '衣服', '鞋子', '化妆品', '淘宝', '京东', '超市', '商场', '衣服', '裤子', '帽子', '包包', '眼镜'],
+            entertainment: ['电影', '游戏', 'KTV', '娱乐', '演出', '演唱会', '门票', '旅游', '旅行', '景点'],
+            study: ['教材', '书', '课程', '培训', '文具', '笔记本', '笔', '打印', '复印'],
+            living: ['房租', '水电', '话费', '网费', '水电煤', '物业费', '快递', '话费充值']
+        };
+
+        const categoryLabels = {
+            food: '餐饮',
+            transport: '交通',
+            shopping: '购物',
+            entertainment: '娱乐',
+            study: '学习',
+            living: '生活'
+        };
+
+        const sensitiveWords = ['高息群', '校园贷', '兼职垫资', '日息', '高回报', '无风险', '保本保息', '贷款', '借钱', '分期', '花呗', '借呗', '白条', '超前消费', '透支', '高利贷', '网贷', '借钱消费'];
+
+        function extractAmount(text) {
+            const patterns = [
+                /(\d+\.?\d*)\s*元/,
+                /(\d+\.?\d*)\s*块/,
+                /(\d+\.?\d*)\s*块钱/,
+                /(\d+\.?\d*)\s*块儿/,
+                /(\d+)\s*块/,
+                /(\d+)\s*元/,
+                /(\d{1,3}(?:,\d{3})*(?:\.\d+)?)\s*元/,
+                /(\d{1,3}(?:,\d{3})*(?:\.\d+)?)\s*块/,
+                
+                /(\d+\.?\d*)\s*块的/,
+                /(\d+\.?\d*)\s*元的/,
+                /(\d+\.?\d*)\s*块钱的/,
+                /(\d+\.?\d*)\s*元钱的/,
+                
+                /(\d+\.?\d*)\s*块钱买/,
+                /(\d+\.?\d*)\s*元买/,
+                /(\d+\.?\d*)\s*块买/,
+                
+                /(\d{3,4})的(鞋|衣服|手机|电脑|耳机|包|书|课程)/,
+                /(\d{3,4})\s*的\s*(鞋|衣服|手机|电脑|耳机|包|书|课程|饭|奶茶|咖啡)/,
+                /(\d{3,4})\s*(鞋|衣服|手机|电脑|耳机|包|书|课程)/,
+                /(\d{3,4})\s*块\s*(鞋|衣服|手机|电脑|耳机|包)/,
+                /(\d{3,4})块的(鞋|衣服|手机|电脑|耳机|包)/,
+                /(\d{3,4})元的(鞋|衣服|手机|电脑|耳机|包)/,
+                
+                /(\d{3,4})买(鞋|衣服|手机|电脑|耳机|包)/,
+                /(\d{3,4})块钱买(鞋|衣服|手机|电脑|耳机|包)/,
+                /(\d{3,4})元买(鞋|衣服|手机|电脑|耳机|包)/,
+                
+                /一双(\d{3,4})的鞋/,
+                /一双(\d{3,4})块的鞋/,
+                /一双(\d{3,4})元的鞋/,
+                /一件(\d{3,4})的衣服/,
+                /一件(\d{3,4})块的衣服/,
+                /一部(\d{3,4})的手机/,
+                /一部(\d{3,4})的电脑/,
+                /一个(\d{3,4})的包/,
+                /一个(\d{3,4})的耳机/,
+                /一台(\d{3,4})的电脑/,
+                /(\d{3,4})块钱的(鞋|衣服|手机|电脑)/,
+                
+                /花\s*了?\s*(\d+\.?\d*)/,
+                /花\s*了?\s*(\d+\.?\d*)\s*块/,
+                /花\s*了?\s*(\d+\.?\d*)\s*元/,
+                /想\s*花\s*(\d+\.?\d*)/,
+                /想\s*花\s*(\d+\.?\d*)\s*元/,
+                /想\s*花\s*(\d+\.?\d*)\s*块/,
+                
+                /收到\s*(\d+\.?\d*)/,
+                /收入\s*(\d+\.?\d*)/,
+                /获得\s*(\d+\.?\d*)/,
+                /获得\s*了?\s*(\d+\.?\d*)/,
+                /发\s*了?\s*(\d+\.?\d*)/,
+                /发\s*(\d+\.?\d*)/,
+                /奖\s*(\d+\.?\d*)/,
+                /奖金\s*(\d+\.?\d*)/,
+                /奖学金\s*(\d+\.?\d*)/,
+                /工资\s*(\d+\.?\d*)/,
+                /兼职\s*(\d+\.?\d*)/,
+                /家教\s*(\d+\.?\d*)/,
+                /赚\s*了?\s*(\d+\.?\d*)/,
+                /挣\s*了?\s*(\d+\.?\d*)/,
+                
+                /消费\s*(\d+\.?\d*)/,
+                /支出\s*(\d+\.?\d*)/,
+                /买\s*(\d+\.?\d*)/,
+                /需要\s*(\d+\.?\d*)/,
+                /要\s*(\d+\.?\d*)/,
+                /充值\s*(\d+\.?\d*)/,
+                /缴费\s*(\d+\.?\d*)/,
+                /交\s*(\d+\.?\d*)/,
+                
+                /每月存\s*(\d+\.?\d*)/,
+                /每月\s*(\d+\.?\d*)\s*元/,
+                /每月\s*(\d+\.?\d*)/,
+                /存\s*(\d+\.?\d*)\s*元/,
+                /存\s*(\d+\.?\d*)/,
+                
+                /(\d+)\s*块钱/,
+                /(\d+\.?\d*)\s*块钱/,
+                /(\d+\.?\d*)\s*块儿/,
+                /(\d+\.?\d*)$/
+            ];
+            for (const pattern of patterns) {
+                const match = text.match(pattern);
+                if (match) {
+                    const numStr = match[1].replace(/,/g, '');
+                    return parseFloat(numStr);
+                }
+            }
+            return null;
+        }
+
+        function classifyExpenseCategory(text) {
+            for (const [category, keywords] of Object.entries(expenseCategories)) {
+                if (keywords.some(keyword => text.includes(keyword))) {
+                    return category;
+                }
+            }
+            return 'living';
+        }
+
+        function analyzePurchaseDecision(text) {
+            const amount = extractAmount(text);
+            if (amount === null) {
+                return '请告诉我具体价格，比如"想买一双300元的鞋"，我帮你分析~';
+            }
+            
+            const category = classifyExpenseCategory(text);
+            const balance = memory.monthlyBudget > 0 ? memory.monthlyBudget - memory.spentAmount : 9999;
+            const purchaseType = classifyPurchaseType(text, amount);
+            const regretAnalysis = calculateRegretProbability(text, amount);
+            const isEmotional = detectEmotionalSpending(text);
+            const impulseLevel = detectImpulseLevel(text, amount);
+            
+            let response = `💰 **消费决策分析**\n\n`;
+            
+            response += `📊 消费类型：${purchaseType.label}\n`;
+            response += `💵 金额：¥${amount}\n`;
+            response += `📁 分类：${categoryLabels[category] || '生活'}\n`;
+            response += `💎 价格评估：${purchaseType.priceLevel || '合理'}\n`;
+            
+            if (memory.monthlyBudget > 0) {
+                const budgetUsage = Math.round((memory.spentAmount / memory.monthlyBudget) * 100);
+                response += `\n💸 当前可用余额：¥${balance.toFixed(2)}\n`;
+                response += `📈 预算使用：${budgetUsage}%\n`;
+                if (budgetUsage > 70) {
+                    response += `⚠️ 预算已使用较多，请注意控制支出\n`;
+                }
+            }
+            
+            response += `\n⏳ 后悔概率：${regretAnalysis.level} (${regretAnalysis.percentage}%)\n`;
+            if (regretAnalysis.reasons.length > 0) {
+                response += `   风险因素：\n`;
+                regretAnalysis.reasons.forEach((reason, index) => {
+                    response += `   ${index + 1}. ${reason}\n`;
+                });
+            }
+            
+            if (regretAnalysis.level !== '低') {
+                response += `\n🤔 为什么可能后悔：${regretAnalysis.explanation}\n`;
+            }
+            
+            if (isEmotional) {
+                const emotionalResponse = getEmotionalResponse(isEmotional);
+                if (emotionalResponse) {
+                    response += `\n${emotionalResponse}\n`;
+                }
+                if (isEmotional.type === 'negative' || isEmotional.type === 'boredom') {
+                    response += `\n💡 情绪消费提醒：这更像情绪驱动消费\n`;
+                    response += `   替代方案：${getAlternativeSuggestion(text)}\n`;
+                    response += `   或许可以先冷静一下，再决定是否真的需要~`;
+                }
+            }
+            
+            if (impulseLevel > 50) {
+                response += `\n🚦 冲动消费预警：\n`;
+                response += `   建议延迟决策${impulseLevel > 70 ? '1天' : '30分钟'}再回来决定\n`;
+                response += `   很多冲动消费在延迟后都会被放弃哦~`;
+            }
+            
+            response += `\n${purchaseType.advice}\n`;
+            
+            return response;
+        }
+
+        function classifyPurchaseType(text, amount) {
+            const necessityKeywords = ['必须', '刚需', '需要', '缺', '没了', '坏了', '上课', '学习', '教材', '文具', '吃饭', '饿'];
+            const improvementKeywords = ['升级', '更好', '新款', '换', '更新', '提升', '品质', '换一个', '换个'];
+            const impulseKeywords = ['想买', '好看', '喜欢', '种草', '网红', '限量', '打折', '促销', '划算', '便宜', '秒杀'];
+            
+            const priceRanges = {
+                '奶茶': { min: 0, reasonable: 20, high: 30 },
+                '饮料': { min: 0, reasonable: 15, high: 25 },
+                '外卖': { min: 0, reasonable: 30, high: 50 },
+                '吃饭': { min: 0, reasonable: 40, high: 80 },
+                '餐': { min: 0, reasonable: 40, high: 80 },
+                '衣服': { min: 0, reasonable: 200, high: 500 },
+                '鞋': { min: 0, reasonable: 400, high: 800 },
+                '鞋子': { min: 0, reasonable: 400, high: 800 },
+                '包包': { min: 0, reasonable: 300, high: 800 },
+                '化妆品': { min: 0, reasonable: 200, high: 500 },
+                '护肤品': { min: 0, reasonable: 200, high: 500 },
+                '数码': { min: 0, reasonable: 1000, high: 3000 },
+                '手机': { min: 0, reasonable: 3000, high: 6000 },
+                '电脑': { min: 0, reasonable: 5000, high: 10000 },
+                '零食': { min: 0, reasonable: 50, high: 100 },
+                '游戏': { min: 0, reasonable: 100, high: 300 },
+                '书': { min: 0, reasonable: 50, high: 100 },
+                '课程': { min: 0, reasonable: 500, high: 1500 },
+                '打车': { min: 0, reasonable: 30, high: 80 },
+                '电影': { min: 0, reasonable: 50, high: 100 },
+                'KTV': { min: 0, reasonable: 100, high: 300 },
+                '门票': { min: 0, reasonable: 100, high: 300 },
+                '礼物': { min: 0, reasonable: 100, high: 300 },
+                '生日': { min: 0, reasonable: 200, high: 500 },
+                '聚餐': { min: 0, reasonable: 50, high: 150 },
+                '咖啡': { min: 0, reasonable: 30, high: 50 },
+                '甜品': { min: 0, reasonable: 30, high: 60 },
+                '水果': { min: 0, reasonable: 30, high: 60 },
+                '日用品': { min: 0, reasonable: 50, high: 150 },
+                '话费': { min: 0, reasonable: 50, high: 100 },
+                '网费': { min: 0, reasonable: 100, high: 200 },
+                '水电': { min: 0, reasonable: 100, high: 200 }
+            };
+            
+            let itemType = null;
+            for (const [key, range] of Object.entries(priceRanges)) {
+                if (text.includes(key)) {
+                    itemType = key;
+                    break;
+                }
+            }
+            
+            let priceReasonable = true;
+            let priceLevel = '合理';
+            if (itemType && amount !== null) {
+                const range = priceRanges[itemType];
+                if (amount > range.high) {
+                    priceReasonable = false;
+                    priceLevel = '过高';
+                } else if (amount > range.reasonable) {
+                    priceLevel = '偏高';
+                }
+            }
+            
+            const balance = memory.monthlyBudget > 0 ? memory.monthlyBudget - memory.spentAmount : 9999;
+            const canAfford = amount <= balance * 0.3;
+            
+            if (necessityKeywords.some(k => text.includes(k))) {
+                if (priceReasonable && canAfford) {
+                    return {
+                        label: '刚需消费',
+                        priceLevel: priceLevel,
+                        advice: '✅ 可以购买：这是生活必需的支出，价格合理且在承受范围内。'
+                    };
+                } else if (priceReasonable && !canAfford) {
+                    return {
+                        label: '刚需消费',
+                        priceLevel: priceLevel,
+                        advice: '⚠️ 建议延迟：虽然是刚需，但当前预算较紧，建议优先保障基本生活开支。'
+                    };
+                } else {
+                    return {
+                        label: '刚需消费',
+                        priceLevel: priceLevel,
+                        advice: `⚠️ 价格${priceLevel}：虽然是刚需，但这个价格偏高，建议货比三家寻找更实惠的选择。`
+                    };
+                }
+            }
+            
+            if (improvementKeywords.some(k => text.includes(k))) {
+                if (priceReasonable && canAfford) {
+                    return {
+                        label: '改善型消费',
+                        priceLevel: priceLevel,
+                        advice: '✅ 可以购买：升级改善是可以的，价格合理且在预算范围内。'
+                    };
+                } else if (priceReasonable && !canAfford) {
+                    return {
+                        label: '改善型消费',
+                        priceLevel: priceLevel,
+                        advice: '⚠️ 建议延迟：升级改善可以稍等，当前预算较紧，建议优先保障必要支出。'
+                    };
+                } else {
+                    return {
+                        label: '改善型消费',
+                        priceLevel: priceLevel,
+                        advice: `🚫 不建议：价格${priceLevel}，改善型消费建议选择更实惠的方案或暂时搁置。`
+                    };
+                }
+            }
+            
+            if (impulseKeywords.some(k => text.includes(k))) {
+                if (priceReasonable && canAfford) {
+                    return {
+                        label: '普通消费',
+                        priceLevel: priceLevel,
+                        advice: '✅ 可以购买：价格合理且在预算范围内，喜欢就买吧！'
+                    };
+                } else if (priceReasonable && !canAfford) {
+                    return {
+                        label: '冲动消费',
+                        priceLevel: priceLevel,
+                        advice: '⚠️ 建议延迟：当前预算较紧，建议先冷静一下再决定是否真的需要。'
+                    };
+                } else {
+                    return {
+                        label: '冲动消费',
+                        priceLevel: priceLevel,
+                        advice: `🚫 不建议：价格${priceLevel}，这看起来更像冲动消费，建议先冷静3天再决定~`
+                    };
+                }
+            }
+            
+            if (itemType && !priceReasonable) {
+                return {
+                    label: '价格偏高消费',
+                    priceLevel: priceLevel,
+                    advice: `🚫 不建议：价格${priceLevel}，超出同类商品合理范围，建议谨慎购买或寻找替代方案。`
+                };
+            }
+            
+            if (canAfford) {
+                return {
+                    label: '普通消费',
+                    priceLevel: priceLevel,
+                    advice: '✅ 可以购买：预算充足，喜欢就买吧！'
+                };
+            } else {
+                return {
+                    label: '普通消费',
+                    priceLevel: priceLevel,
+                    advice: '⚠️ 建议延迟：当前预算较紧，建议考虑是否真的需要。'
+                };
+            }
+        }
+
+        function calculateRegretProbability(text, amount) {
+            let probability = 20;
+            let reasons = [];
+            
+            const similarItems = ['衣服', '鞋子', '包包', '化妆品', '数码', '游戏', '零食', '手机', '电脑'];
+            const lowUsage = ['收藏', '摆设', '装饰', '偶尔', '可能', '也许', '试试', '放着', '备用'];
+            const impulseTriggers = ['打折', '促销', '秒杀', '限量', '网红', '种草'];
+            
+            if (similarItems.some(k => text.includes(k))) {
+                probability += 20;
+                reasons.push('可能已有类似物品');
+            }
+            
+            if (lowUsage.some(k => text.includes(k))) {
+                probability += 20;
+                reasons.push('使用频率可能较低');
+            }
+            
+            if (memory.monthlyBudget > 0) {
+                const balance = memory.monthlyBudget - memory.spentAmount;
+                const budgetPercentage = (amount / memory.monthlyBudget) * 100;
+                
+                if (budgetPercentage > 20) {
+                    probability += 30;
+                    reasons.push('单笔支出占预算比例过高');
+                } else if (budgetPercentage > 10) {
+                    probability += 15;
+                    reasons.push('单笔支出占预算比例偏高');
+                }
+                
+                if (amount > balance * 0.5) {
+                    probability += 15;
+                    reasons.push('超出当前可用余额的一半');
+                }
+            }
+            
+            if (impulseTriggers.some(k => text.includes(k))) {
+                probability += 15;
+                reasons.push('受促销活动影响较大');
+            }
+            
+            const historyCount = memory.spendingHistory.filter(item => {
+                return similarItems.some(k => text.includes(k)) || 
+                       (item.category === classifyExpenseCategory(text));
+            }).length;
+            if (historyCount > 5) {
+                probability += 10;
+                reasons.push('同类消费频率较高');
+            }
+            
+            probability = Math.min(probability, 95);
+            
+            let level = '低';
+            if (probability >= 70) level = '高';
+            else if (probability >= 40) level = '中';
+            
+            if (reasons.length === 0) {
+                reasons.push('各项指标都比较健康');
+            }
+            
+            let explanation = '';
+            if (level === '高') {
+                explanation = '这个购买决定风险较高，因为多个因素显示你可能在未来对这次消费感到后悔。建议先冷静下来，重新评估是否真的需要。';
+            } else if (level === '中') {
+                explanation = '这个购买有一定的后悔风险，主要因为上述因素。建议花点时间思考，确认这是你真正想要的。';
+            } else {
+                explanation = '各项指标都比较健康，后悔的可能性较低。';
+            }
+            
+            return {
+                level: level,
+                percentage: probability,
+                reasons: reasons,
+                explanation: explanation,
+                reason: reasons.join('；')
+            };
+        }
+
+        function detectImpulseLevel(text, amount) {
+            let impulseLevel = 0;
+            
+            const impulseKeywords = ['立刻', '马上', '现在', '赶紧', '秒杀', '限时', '最后', '仅剩', '疯抢', '爆款'];
+            const emotionalKeywords = ['开心', '高兴', '难过', '郁闷', '压力', '奖励', '犒劳', '安慰'];
+            const socialKeywords = ['别人都有', '朋友推荐', '种草', '网红', '大家都买'];
+            
+            if (impulseKeywords.some(k => text.includes(k))) {
+                impulseLevel += 30;
+            }
+            
+            if (emotionalKeywords.some(k => text.includes(k))) {
+                impulseLevel += 20;
+            }
+            
+            if (socialKeywords.some(k => text.includes(k))) {
+                impulseLevel += 20;
+            }
+            
+            if (memory.monthlyBudget > 0) {
+                const budgetPercentage = (amount / memory.monthlyBudget) * 100;
+                if (budgetPercentage > 15) {
+                    impulseLevel += 20;
+                }
+            }
+            
+            return Math.min(impulseLevel, 100);
+        }
+
+        function detectEmotionalSpending(text) {
+            const negativeEmotions = ['压力', '心情不好', '难过', '郁闷', '烦躁', '伤心', '沮丧', '失落', '焦虑', '烦躁'];
+            const positiveEmotions = ['开心', '高兴', '快乐', '幸福', '庆祝', '兴奋', '满足', '愉快'];
+            const rewardEmotions = ['奖励自己', '犒劳自己', '慰劳自己'];
+            const boredomEmotions = ['无聊', '没事做', '打发时间', '闲得慌'];
+            
+            if (negativeEmotions.some(k => text.includes(k))) {
+                return { type: 'negative', label: '消极情绪' };
+            }
+            if (positiveEmotions.some(k => text.includes(k))) {
+                return { type: 'positive', label: '积极情绪' };
+            }
+            if (rewardEmotions.some(k => text.includes(k))) {
+                return { type: 'reward', label: '奖励消费' };
+            }
+            if (boredomEmotions.some(k => text.includes(k))) {
+                return { type: 'boredom', label: '无聊消费' };
+            }
+            return null;
+        }
+
+        function getEmotionalResponse(emotion) {
+            if (!emotion) return null;
+            
+            const responses = {
+                positive: [
+                    '🎉 太棒了！开心的时候就该好好享受~',
+                    '😊 看到你开心我也很开心！',
+                    '✨ 心情好的时候消费也是一种快乐！',
+                    '🎊 恭喜恭喜！好好庆祝一下吧~',
+                    '😄 快乐最重要，偶尔犒劳自己是应该的！'
+                ],
+                negative: [
+                    '😔 怎么啦？有什么烦心事可以跟我说说~',
+                    '💝 别难过，一切都会好起来的！',
+                    '🤗 抱抱~ 要不要聊聊天放松一下？',
+                    '🌧️ 阴天总会过去，晴天就在前方！',
+                    '💪 加油！你不是一个人在战斗！'
+                ],
+                reward: [
+                    '🎁 奖励自己是应该的！辛苦了！',
+                    '🌟 好好犒劳一下自己吧~',
+                    '💖 对自己好一点！',
+                    '🎉 庆祝一下，继续加油！'
+                ],
+                boredom: [
+                    '😴 无聊了吗？不如找点有趣的事情做~',
+                    '📚 可以看看书或者追追剧哦！',
+                    '👫 约朋友出去玩玩吧！',
+                    '🎮 玩会儿游戏放松一下~'
+                ]
+            };
+            
+            const responseList = responses[emotion.type];
+            if (responseList) {
+                return responseList[Math.floor(Math.random() * responseList.length)];
+            }
+            return null;
+        }
+
+        function getAlternativeSuggestion(text) {
+            const suggestions = [
+                '可以试试做点喜欢的运动放松一下~',
+                '不如和朋友聊聊天，心情会好很多！',
+                '看一部喜欢的电影也是不错的选择~',
+                '出去散散步，呼吸新鲜空气吧！',
+                '泡一杯热茶，好好休息一下~'
+            ];
+            return suggestions[Math.floor(Math.random() * suggestions.length)];
+        }
+
+        function simulateFinanceImpact(amount, months = 3) {
+            const saved = amount * months;
+            return `\n📅 **未来财务模拟**\n\n` +
+                   `如果这笔钱不花，每月存¥${amount}：\n` +
+                   `- ${months}个月后：¥${saved}\n` +
+                   `- 这会让你的攒钱目标进度增加 ¥${saved}\n` +
+                   `\n当然啦，偶尔犒劳自己也是很重要的！`;
+        }
+
+        function generateFinancePersonality() {
+            const history = memory.spendingHistory;
+            if (history.length === 0) {
+                return null;
+            }
+            
+            const totalSpent = history.reduce((sum, item) => sum + item.amount, 0);
+            const avgSpent = totalSpent / history.length;
+            const categories = {};
+            
+            history.forEach(item => {
+                categories[item.category] = (categories[item.category] || 0) + item.amount;
+            });
+            
+            const sortedCategories = Object.entries(categories).sort((a, b) => b[1] - a[1]);
+            const maxCategory = sortedCategories[0][0];
+            const secondCategory = sortedCategories.length > 1 ? sortedCategories[1][0] : null;
+            
+            const impulseCount = history.filter(item => 
+                ['shopping', 'entertainment', 'living'].includes(item.category) && item.amount > 50
+            ).length;
+            
+            const smallPurchaseCount = history.filter(item => item.amount < 20).length;
+            const largePurchaseCount = history.filter(item => item.amount > 200).length;
+            
+            const avgFrequency = history.length / 30;
+            
+            let personality = '';
+            let description = '';
+            let suggestions = [];
+            
+            if (avgSpent > 150 || impulseCount > history.length * 0.4) {
+                personality = '🎭 冲动型消费者';
+                description = '容易被情绪和促销活动影响，消费决策比较随性';
+                suggestions = [
+                    '购物前可以先放进购物车，等24小时再决定',
+                    '设置消费冷静期，大额消费先放一放',
+                    '可以试试"30天不买"挑战',
+                    '每次想买东西时，问自己"这是我真正需要的吗？"'
+                ];
+            } else if (memory.monthlyBudget > 0 && memory.spentAmount < memory.monthlyBudget * 0.6) {
+                personality = '🧘 理性型消费者';
+                description = '消费有规划，能很好地控制支出，是理财的好苗子';
+                suggestions = [
+                    '继续保持！你的消费习惯很健康',
+                    '可以考虑把结余的钱存起来或做小额投资',
+                    '适当奖励自己也是必要的哦~',
+                    '可以尝试设定更高的储蓄目标'
+                ];
+            } else if (categories['food'] && categories['food'] > totalSpent * 0.5) {
+                personality = '🍔 美食爱好者';
+                description = '热爱美食，愿意在吃上花心思和金钱';
+                suggestions = [
+                    '尝试自己做饭，既能省钱又能学技能',
+                    '可以设定"每周外卖次数"限制',
+                    '食堂其实有很多美味又实惠的选择',
+                    '寻找性价比高的餐厅和美食优惠'
+                ];
+            } else if (categories['entertainment'] && categories['entertainment'] > totalSpent * 0.3) {
+                personality = '🎮 娱乐达人';
+                description = '喜欢享受生活，愿意为娱乐和体验付费';
+                suggestions = [
+                    '寻找一些低成本的娱乐方式',
+                    '学生票、团购可以省不少钱',
+                    '平衡娱乐和学习，合理安排时间',
+                    '尝试一些免费或低成本的活动'
+                ];
+            } else if (categories['shopping'] && categories['shopping'] > totalSpent * 0.4) {
+                personality = '🛍️ 购物爱好者';
+                description = '喜欢购物带来的满足感，容易被新品和潮流吸引';
+                suggestions = [
+                    '制定购物清单，只买清单上的物品',
+                    '关注真正需要的，而不是想要的',
+                    '可以设定每月购物预算上限',
+                    '换季打折时再买非必需品'
+                ];
+            } else if (smallPurchaseCount > history.length * 0.6) {
+                personality = '🐿️ 小额高频消费者';
+                description = '喜欢买小物件，积少成多也是一笔不小的开支';
+                suggestions = [
+                    '留意那些"小钱"，积少成多很惊人',
+                    '可以设定每日消费上限',
+                    '每周复盘小额支出，看看哪些可以省',
+                    '尝试把零散的钱攒起来'
+                ];
+            } else if (largePurchaseCount > history.length * 0.1) {
+                personality = '💰 大额消费者';
+                description = '消费频次不高，但单笔金额较大';
+                suggestions = [
+                    '大额消费前一定要多做功课，货比三家',
+                    '考虑是否真的需要，有没有替代品',
+                    '可以分阶段购买，减轻一次性支出压力',
+                    '关注产品的性价比和使用频率'
+                ];
+            } else if (avgFrequency > 2) {
+                personality = '📱 高频消费者';
+                description = '每天都有消费记录，消费比较频繁';
+                suggestions = [
+                    '尝试每天只消费一次或固定消费时间',
+                    '准备一些备用零食和日用品，减少临时购买',
+                    '设定"无消费日"挑战',
+                    '批量购买可以节省时间和金钱'
+                ];
+            } else if (categories['study'] && categories['study'] > totalSpent * 0.2) {
+                personality = '📚 学习型消费者';
+                description = '重视自我提升，愿意为学习和成长投资';
+                suggestions = [
+                    '继续保持对学习的投入！',
+                    '可以关注二手教材和课程优惠',
+                    '图书馆是获取知识的好地方',
+                    '利用学校资源，很多学习资源是免费的'
+                ];
+            } else {
+                personality = '✨ 均衡型消费者';
+                description = '消费结构比较均衡，各项支出比例合理';
+                suggestions = [
+                    '消费结构比较均衡，继续保持！',
+                    '可以设定一个小的攒钱目标挑战自己',
+                    '关注一下哪些支出可以优化',
+                    '尝试提高储蓄比例'
+                ];
+            }
+            
+            return {
+                type: personality,
+                description: description,
+                suggestions: suggestions,
+                stats: {
+                    totalSpent: totalSpent.toFixed(2),
+                    avgSpent: avgSpent.toFixed(2),
+                    recordCount: history.length,
+                    topCategory: categoryLabels[maxCategory] || maxCategory,
+                    secondCategory: secondCategory ? (categoryLabels[secondCategory] || secondCategory) : null,
+                    categoryBreakdown: Object.entries(categories).map(([cat, amt]) => ({
+                        name: categoryLabels[cat] || cat,
+                        amount: amt.toFixed(2),
+                        percentage: ((amt / totalSpent) * 100).toFixed(1)
+                    }))
+                }
+            };
+        }
+
+        function getPersonalityResponse() {
+            const personality = generateFinancePersonality();
+            if (!personality) {
+                return '还没有足够的消费记录来分析你的理财人格~ 多记录一些消费吧！';
+            }
+            
+            let response = `🧑💼 **你的理财人格画像**\n\n`;
+            response += `**${personality.type}**\n\n`;
+            response += `📝 ${personality.description}\n\n`;
+            
+            response += `📊 消费数据：\n`;
+            response += `- 累计消费：¥${personality.stats.totalSpent}\n`;
+            response += `- 平均单笔：¥${personality.stats.avgSpent}\n`;
+            response += `- 消费笔数：${personality.stats.recordCount}笔\n`;
+            response += `- 主要消费：${personality.stats.topCategory}\n`;
+            if (personality.stats.secondCategory) {
+                response += `- 次要消费：${personality.stats.secondCategory}\n`;
+            }
+            
+            response += `\n📈 分类占比：\n`;
+            personality.stats.categoryBreakdown.forEach(cat => {
+                response += `- ${cat.name}：¥${cat.amount} (${cat.percentage}%)\n`;
+            });
+            
+            response += `\n💡 改进建议：\n`;
+            personality.suggestions.forEach((suggestion, index) => {
+                response += `${index + 1}. ${suggestion}\n`;
+            });
+            
+            return response;
+        }
+
+        function checkSensitiveWords(text) {
+            if (text.includes('校园贷') || text.includes('高利贷') || text.includes('网贷') || text.includes('日息')) {
+                return `⚠️ **严重警告：警惕高利贷陷阱！**
+
+🚫 **风险分析**：
+校园贷、高利贷等网络贷款往往披着"低利息"的外衣，实际年化利率可能高达36%以上！
+例如"日息万分之五"看似很低，换算成年化利率高达18.25%，是银行贷款利率的数倍。
+
+💀 **真实案例警示**：
+许多大学生因陷入校园贷，最终背负巨额债务，甚至被迫退学、家庭破裂。
+
+✅ **正确做法**：
+1. 坚决远离任何形式的校园贷、网贷
+2. 如有资金需求，向学校资助中心求助
+3. 向父母说明情况，寻求合理帮助
+4. 培养量入为出的消费习惯
+
+**记住**：理财的第一步是保住本金，而不是冒险借贷！`;
+            }
+            
+            if (text.includes('贷款') || text.includes('借钱')) {
+                return `⚠️ **贷款风险预警**
+
+📊 **风险评估**：作为大学生，收入不稳定，贷款会带来沉重的还款压力。
+
+💰 **潜在后果**：
+- 利息负担：贷款需要支付利息，增加实际支出
+- 信用风险：逾期还款会影响个人征信
+- 压力增大：每月还款会限制消费自由
+- 恶性循环：可能陷入"以贷养贷"的陷阱
+
+💡 **替代方案**：
+1. 调整消费计划，推迟非必要支出
+2. 通过兼职增加收入
+3. 向学校申请助学金或奖学金
+4. 与父母沟通，寻求合理支持
+
+**建议**：在没有稳定收入来源前，尽量避免任何形式的贷款！`;
+            }
+            
+            if (text.includes('超前消费') || text.includes('透支')) {
+                return `⚠️ **超前消费风险预警**
+
+🔄 **风险分析**：超前消费会让你陷入"先享受，后还债"的模式，容易超出自身承受能力。
+
+⚠️ **潜在问题**：
+- 容易过度消费：花钱时没有痛感，容易买不需要的东西
+- 利息成本：信用卡分期、花呗分期都有手续费
+- 养成坏习惯：习惯了超前消费，难以养成储蓄习惯
+- 财务压力：月底还款时容易焦虑
+
+💡 **理性消费建议**：
+1. 设定明确的消费预算
+2. 区分"需要"和"想要"
+3. 先存后花，而不是先花后还
+4. 培养延迟满足的能力
+
+**记住**：真正的财务自由是"花自己已经赚到的钱"！`;
+            }
+            
+            if (text.includes('花呗') || text.includes('借呗') || text.includes('白条')) {
+                return `⚠️ **信用支付工具使用提醒**
+
+💳 **工具特点**：花呗、借呗、白条等本质上是短期贷款，使用需谨慎！
+
+⚠️ **注意事项**：
+- 免息期有限：超过免息期会产生利息
+- 分期有成本：分期手续费折算年化利率不低
+- 容易失控：一键支付降低了消费门槛
+- 影响征信：逾期会影响个人信用记录
+
+✅ **正确使用方式**：
+1. 只用于紧急情况，不用于日常消费
+2. 设置消费限额，避免超额使用
+3. 每月按时全额还款，不分期
+4. 定期查看账单，了解消费情况
+
+**建议**：把信用支付工具当作"应急备用金"，而不是"日常消费工具"！`;
+            }
+            
+            if (text.includes('分期') && text.includes('买')) {
+                return `⚠️ **分期付款风险提示**
+
+📅 **风险分析**：分期付款会让大额消费看起来"不贵"，但实际总成本更高！
+
+💰 **真实成本**：
+- 手续费：分期通常有0.5%-1.5%/期的手续费
+- 总价更高：加上手续费后，实际支付金额超过商品标价
+- 隐性成本：提前还款可能仍需支付全部手续费
+
+📝 **决策建议**：
+1. 计算真实成本：把手续费算进总价再决定
+2. 考虑必要性：是否真的需要现在购买？
+3. 评估偿还能力：每月还款后是否还有足够生活费？
+4. 比较其他方案：是否有更便宜的购买方式？
+
+**原则**：如果一件商品需要分期才能购买，说明你可能还没准备好拥有它！`;
+            }
+            
+            if (text.includes('高回报') || text.includes('无风险') || text.includes('保本保息') || text.includes('高息群')) {
+                return `⚠️ **警惕高收益陷阱！**
+
+🚨 **风险警示**："高收益、无风险、保本保息"往往是诈骗的诱饵！
+
+📊 **风险评估**：
+- 正常理财收益：货币基金年化2%-3%，债券基金3%-5%
+- 超过6%要谨慎，超过10%很可能是骗局
+- "保本保息"在我国不受法律保护（除存款外）
+
+💡 **防骗要点**：
+1. 不贪高收益：天上不会掉馅饼
+2. 核实资质：查看平台是否有金融牌照
+3. 保护信息：不轻易提供身份证、银行卡信息
+4. 小额试水：先投少量资金测试
+
+**记住**：你盯着别人的高利息，别人盯着你的本金！`;
+            }
+            
+            return null;
+        }
+
+        function handleFinanceQuestion(text) {
+            for (const [term, explanation] of Object.entries(financeTerms)) {
+                if (text.includes(term)) {
+                    return `📚 **${term}**\n\n${explanation}`;
+                }
+            }
+            
+            if (text.includes('大学生') && (text.includes('理财') || text.includes('投资'))) {
+                return `🎓 **大学生理财入门指南**\n\n` +
+                       `作为大学生，理财的核心不是赚大钱，而是培养正确的金钱观和消费习惯！\n\n` +
+                       `💡 **入门三步法**：\n` +
+                       `1. **先记账**：用APP记录每一笔支出，了解钱花在哪里\n` +
+                       `2. **建应急金**：存3个月生活费，放在余额宝这类灵活的地方\n` +
+                       `3. **学投资**：从指数基金定投开始，风险低、操作简单\n\n` +
+                       `💰 **生活费分配建议（50/30/20法则）**：\n` +
+                       `- 50% 必要支出：吃饭、交通、学习用品\n` +
+                       `- 30% 灵活消费：奶茶、娱乐、社交\n` +
+                       `- 20% 储蓄/投资：为未来目标存钱\n\n` +
+                       `⚠️ **避坑提醒**：\n` +
+                       `- 远离校园贷、高收益骗局\n` +
+                       `- 不要用生活费炒股（风险太大）\n` +
+                       `- 养成"先存后花"的习惯\n\n` +
+                       `想了解具体哪个方面？我可以给你详细讲讲~`;
+            }
+            
+            if (text.includes('基金') && text.includes('入门')) {
+                return `📈 **基金入门科普**\n\n` +
+                       `基金就是把很多人的钱集中起来，交给专业的人去投资~ \n\n` +
+                       `🎯 **新手适合的基金类型**：\n` +
+                       `1. **货币基金**：像余额宝，风险极低，随取随用，适合放应急金\n` +
+                       `2. **指数基金**：跟踪大盘指数（如沪深300），分散风险，适合定投\n` +
+                       `3. **债券基金**：主要投资债券，风险中等，收益比货币基金高一点\n\n` +
+                       `💡 **定投小技巧**：\n` +
+                       `- 每月固定时间投（如发生活费当天）\n` +
+                       `- 金额不用多，100-500元都可以\n` +
+                       `- 长期坚持，平均成本，降低风险\n\n` +
+                       `🌰 **举个例子**：\n` +
+                       `每月定投200元，年化收益8%，10年后能有3.5万左右！\n\n` +
+                       `想试试模拟一下吗？告诉我你想每月投多少~`;
+            }
+            
+            if (text.includes('股票') && text.includes('入门')) {
+                return `📊 **股票入门科普**\n\n` +
+                       `股票就是公司的一部分所有权。买股票，就是成为公司的小股东~ \n\n` +
+                       `⚠️ **大学生炒股建议**：\n` +
+                       `1. **只用闲钱**：不要影响日常生活，建议投入不超过可支配资金的20%\n` +
+                       `2. **先学习**：了解基本概念（K线、市盈率、公司财报）再动手\n` +
+                       `3. **分散投资**：不要把钱都投在一只股票上\n` +
+                       `4. **长期持有**：短期波动大，长期看公司价值\n\n` +
+                       `🎓 **学习路径**：\n` +
+                       `- 先玩模拟盘（很多APP都有）\n` +
+                       `- 读一本入门书（如《聪明的投资者》）\n` +
+                       `- 关注行业新闻，了解公司业务\n\n` +
+                       `💡 **提醒**：股市有风险，投资需谨慎！新手建议先从基金开始~`;
+            }
+            
+            if (text.includes('怎么开始') || text.includes('新手')) {
+                return `🚀 **新手理财入门步骤**\n\n` +
+                       `别担心，理财入门很简单！跟着这几步来：\n\n` +
+                       `第一步：**记账**\n` +
+                       `用随手记、鲨鱼记账等APP，记录每天的支出，坚持1个月，你会发现很多可以优化的地方~ \n\n` +
+                       `第二步：**存钱**\n` +
+                       `发生活费后，先转20%到另一个账户（如余额宝），剩下的再花。这招叫"先存后花"，超管用！\n\n` +
+                       `第三步：**投资**\n` +
+                       `从指数基金定投开始，每月100元起，门槛低、风险小。推荐沪深300、中证500这类宽基指数~ \n\n` +
+                       `第四步：**学习**\n` +
+                       `关注一些靠谱的财经公众号，了解基本概念。记住：投资自己永远是最好的投资！\n\n` +
+                       `需要我帮你模拟一下储蓄或投资计划吗？😊`;
+            }
+            
+            if (text.includes('理财目标') || text.includes('攒钱')) {
+                return `🎯 **制定理财目标**\n\n` +
+                       `理财目标要具体、可量化！比如：\n\n` +
+                       `🌰 **常见目标**：\n` +
+                       `1. 短期（1年内）：旅行基金、买手机、应急金\n` +
+                       `2. 中期（1-3年）：毕业旅行、实习租房押金\n` +
+                       `3. 长期（3年以上）：创业启动资金、首付\n\n` +
+                       `📝 **目标拆解**：\n` +
+                       `比如想1年后攒5000元旅行：\n` +
+                       `- 每月需要存：5000 ÷ 12 ≈ 417元\n` +
+                       `- 如果每月生活费2000元，需要存20%左右\n\n` +
+                       `💡 **小技巧**：\n` +
+                       `- 把目标写下来，放在显眼的地方\n` +
+                       `- 每达成一个小目标就奖励自己一下\n` +
+                       `- 定期检查进度，及时调整\n\n` +
+                       `你有什么攒钱目标吗？我帮你分析分析~`;
+            }
+            
+            if (text.includes('解释') || text.includes('什么是')) {
+                return '你可以问我具体的金融术语，比如"什么是公募基金"、"解释定投"等~';
+            }
+            if (text.includes('理财') || text.includes('投资')) {
+                return [
+                    '💡 先存后花：发生活费后先存一部分，剩下的再花',
+                    '💡 应急金：建议预留3-6个月生活费',
+                    '💡 记账习惯：每天花1分钟记录支出',
+                    '💡 远离高息诱惑：年化超过15%要警惕',
+                    '💡 分散投资：不要把所有钱放一个地方'
+                ].join('\n');
+            }
+            return null;
+        }
+
+        function assessUserFinanceStage() {
+            const incomeTotal = memory.incomeHistory.reduce((sum, item) => sum + item.amount, 0);
+            const totalIncome = memory.monthlyBudget + incomeTotal;
+            const savingRate = totalIncome > 0 ? ((totalIncome - memory.spentAmount) / totalIncome * 100).toFixed(1) : 0;
+            const hasEmergencyFund = memory.emergencyFund > 0;
+            const emergencyTarget = memory.monthlyBudget * 1;
+            const emergencyProgress = memory.monthlyBudget > 0 ? (memory.emergencyFund / emergencyTarget * 100).toFixed(1) : 0;
+            
+            let stage = 'cashflow';
+            let reason = '';
+            
+            if (savingRate < 0) {
+                stage = 'overspend';
+                reason = '当前支出超过收入，处于入不敷出状态';
+            } else if (savingRate >= 0 && savingRate < 10) {
+                stage = 'cashflow';
+                reason = '储蓄率较低，建议先优化现金流管理';
+            } else if (!hasEmergencyFund || parseFloat(emergencyProgress) < 100) {
+                stage = 'emergency';
+                reason = '应急金尚未建立或未达标';
+            } else {
+                stage = 'ready';
+                reason = '已具备投资入门的基础条件';
+            }
+            
+            return {
+                stage,
+                reason,
+                savingRate: parseFloat(savingRate),
+                hasEmergencyFund,
+                emergencyProgress: parseFloat(emergencyProgress),
+                monthlyBudget: memory.monthlyBudget,
+                spentAmount: memory.spentAmount,
+                emergencyFund: memory.emergencyFund
+            };
+        }
+
+        function getFinanceStageResponse(text) {
+            const assessment = assessUserFinanceStage();
+            
+            if (assessment.stage === 'overspend') {
+                return `😅 **你目前更适合先解决收支平衡问题**\n\n` +
+                       `根据你的情况：\n` +
+                       `- 当前储蓄率：${assessment.savingRate}%（支出 > 收入）\n\n` +
+                       `📋 **先行任务**：\n` +
+                       `1. **记录支出**：连续7天记录每一笔消费，找出主要开销\n` +
+                       `2. **制定预算**：设定每日/每周消费上限\n` +
+                       `3. **削减非必要开支**：比如减少外卖、奶茶等冲动消费\n` +
+                       `4. **先存后花**：收到生活费后先转10%到储蓄账户\n\n` +
+                       `⚠️ **风险提醒**：在收支平衡前，不建议进行任何投资。先让每一分钱花得明白~`;
+            }
+            
+            if (assessment.stage === 'cashflow') {
+                return `💸 **你现在更适合先做储蓄管理**\n\n` +
+                       `根据你的情况：\n` +
+                       `- 当前储蓄率：${assessment.savingRate}%\n` +
+                       `- 本月支出：¥${assessment.spentAmount.toFixed(2)}\n` +
+                       `- 月度预算：¥${assessment.monthlyBudget}\n\n` +
+                       `📋 **建议步骤**：\n` +
+                       `1. **建立预算**：把生活费分成三部分\n` +
+                       `   - 50% 必要支出（吃饭、交通、学习）\n` +
+                       `   - 30% 灵活消费（娱乐、社交）\n` +
+                       `   - 20% 强制储蓄\n` +
+                       `2. **每月固定留出结余**：发生活费当天就转20%去储蓄\n` +
+                       `3. **建立简单记账习惯**：每天花30秒记录支出\n\n` +
+                       `🎯 目标：先把储蓄率提升到15%以上，再考虑投资~`;
+            }
+            
+            if (assessment.stage === 'emergency') {
+                return `🛡️ **你现在适合建立应急金**\n\n` +
+                       `根据你的情况：\n` +
+                       `- 当前应急金：¥${assessment.emergencyFund}\n` +
+                       `- 目标（1个月生活费）：¥${assessment.monthlyBudget}\n` +
+                       `- 完成进度：${assessment.emergencyProgress}%\n\n` +
+                       `📋 **建议步骤**：\n` +
+                       `1. **设定应急金目标**：先存1个月生活费（¥${assessment.monthlyBudget}）\n` +
+                       `2. **选择存放方式**：放在货币基金（如余额宝），随取随用\n` +
+                       `3. **每月固定存入**：从储蓄中拿出50%-80%放进应急金\n\n` +
+                       `💡 **为什么重要**：应急金能帮你应对突发情况（比如生病、丢东西），避免陷入借贷困境\n\n` +
+                       `⚠️ **风险提醒**：在应急金未达标前，不建议进行风险投资~`;
+            }
+            
+            if (assessment.stage === 'ready') {
+                return `🎉 **你已经可以开始了解低风险理财啦！**\n\n` +
+                       `根据你的情况：\n` +
+                       `- 当前储蓄率：${assessment.savingRate}%\n` +
+                       `- 应急金：已达标\n\n` +
+                       `📋 **学习路径**：\n` +
+                       `1. **了解基础工具**：先搞懂货币基金、指数基金是什么\n` +
+                       `2. **理解风险等级**：不同产品风险不同，收益也不同\n` +
+                       `3. **小额试水**：用零花钱尝试定投（每月100-200元）\n` +
+                       `4. **模拟学习**：可以先用模拟盘熟悉操作\n\n` +
+                       `⚠️ **风险提醒**：\n` +
+                       `- 所有理财都有风险差异\n` +
+                       `- 不存在稳赚不赔的产品\n` +
+                       `- 不建议高风险、短线投机、杠杆、虚拟币投机\n\n` +
+                       `想从哪个部分开始了解？😊`;
+            }
+            
+            return null;
+        }
+
+        function explainFinanceTool(toolName) {
+            const tools = {
+                '货币基金': {
+                    definition: '一种风险极低的理财工具，像升级版的活期存款',
+                    example: '比如余额宝，钱放进去有利息，还能随时取出来花',
+                    risk: '风险极低，但收益也低（年化2%-3%）',
+                    suitable: '适合放应急金、零花钱'
+                },
+                '指数基金': {
+                    definition: '跟踪大盘指数的基金，比如沪深300指数',
+                    example: '相当于买了中国Top300家大公司的股票组合',
+                    risk: '风险中等，会随市场波动，但长期持有风险降低',
+                    suitable: '适合每月定投，作为长期储蓄的一部分'
+                },
+                '债券基金': {
+                    definition: '主要投资债券的基金',
+                    example: '相当于把钱借给国家或大公司，到期拿利息',
+                    risk: '风险较低，收益比货币基金高（年化3%-5%）',
+                    suitable: '适合追求稳健收益的投资者'
+                },
+                '定投': {
+                    definition: '定期定额投资，比如每月发工资后固定买100元基金',
+                    example: '就像每月固定存钱到一个账户，积少成多',
+                    risk: '通过长期投资分散风险，降低择时难度',
+                    suitable: '适合新手、月光族，强制储蓄的好方法'
+                },
+                '分散投资': {
+                    definition: '不要把所有钱放在同一个地方',
+                    example: '比如一部分放货币基金，一部分定投指数基金',
+                    risk: '降低单一投资的风险',
+                    suitable: '所有投资者都应该遵循的原则'
+                },
+                '应急金': {
+                    definition: '为应对突发情况准备的备用金',
+                    example: '比如存3个月生活费，万一生病或丢东西能应急',
+                    risk: '应急金本身是用来降低风险的',
+                    suitable: '每个人都应该有'
+                }
+            };
+            
+            const tool = tools[toolName];
+            if (!tool) return null;
+            
+            return `📚 **${toolName}**\n\n` +
+                   `1️⃣ **是什么**：${tool.definition}\n\n` +
+                   `2️⃣ **举个例子**：${tool.example}\n\n` +
+                   `3️⃣ **风险提示**：${tool.risk}\n\n` +
+                   `4️⃣ **适合谁**：${tool.suitable}`;
+        }
+
+        function getSimulationCase(text) {
+            const amount = extractAmount(text) || 200;
+            
+            if (text.includes('存钱') || text.includes('储蓄')) {
+                return `🧮 **存钱 vs 冲动消费模拟**\n\n` +
+                       `假设你每月有¥${amount}的结余：\n\n` +
+                       `┌────────────────────────────────┐\n` +
+                       `│ 选择 vs 结果                    │\n` +
+                       `├──────────────┬───────────────┤\n` +
+                       `│ 每月存${amount}元 │ 每月花光      │\n` +
+                       `├──────────────┼───────────────┤\n` +
+                       `│ 1年后：¥${amount * 12} │ 1年后：¥0    │\n` +
+                       `│ 3年后：¥${amount * 36} │ 3年后：¥0    │\n` +
+                       `│ (含利息更多) │               │\n` +
+                       `└──────────────┴───────────────┘\n\n` +
+                       `💡 **复利的魔力**：\n` +
+                       `如果年化收益3%，每月存${amount}元：\n` +
+                       `- 1年：¥${Math.round(amount * 12 * 1.03)}（多赚¥${Math.round(amount * 12 * 0.03)}）\n` +
+                       `- 5年：¥${Math.round(amount * 60 * 1.16)}（多赚¥${Math.round(amount * 60 * 0.16)}）\n\n` +
+                       `一杯奶茶¥15，每月少喝4杯就能省出¥${amount}！`;
+            }
+            
+            if (text.includes('定投') || text.includes('定期投入')) {
+                return `🧮 **定投 vs 随意进出模拟**\n\n` +
+                       `假设每月定投¥${amount}，年化收益8%：\n\n` +
+                       `┌────────────────────────────────┐\n` +
+                       `│ 方式 vs 10年后金额              │\n` +
+                       `├──────────────┬───────────────┤\n` +
+                       `│ 坚持定投     │ 随意进出      │\n` +
+                       `├──────────────┼───────────────┤\n` +
+                       `│ 约¥${Math.round(amount * 120 * 1.5)} │ 约¥${Math.round(amount * 120 * 0.8)} │\n` +
+                       `└──────────────┴───────────────┘\n\n` +
+                       `💡 **为什么定投更好**：\n` +
+                       `- 市场下跌时自动买更多份额\n` +
+                       `- 市场上涨时自动买更少份额\n` +
+                       `- 平均成本，降低风险\n\n` +
+                       `🚨 **提醒**：以上仅为模拟，不代表实际收益！`;
+            }
+            
+            if (text.includes('波动') || text.includes('回撤')) {
+                return `📈 **理解波动和回撤**\n\n` +
+                       `🌰 **举个例子**：\n` +
+                       `你买了一只基金，净值从1元涨到1.2元（赚20%），\n` +
+                       `然后又跌到1.08元（亏10%）。\n\n` +
+                       `- **波动**：价格上上下下的变化\n` +
+                       `- **回撤**：从最高点跌到最低点的幅度\n\n` +
+                       `📊 **模拟场景**：\n` +
+                       `如果基金净值变化：1 → 1.2 → 1.08 → 1.3 → 1.17 → 1.5\n` +
+                       `- 最大回撤：约20%（从1.2跌到0.96）\n` +
+                       `- 最终收益：50%\n\n` +
+                       `💡 **启示**：短期波动很正常，长期持有才能看到收益~`;
+            }
+            
+            return `🤔 想模拟什么场景呢？试试：\n` +
+                   `- "模拟每月存200"\n` +
+                   `- "定投vs一次性投入"\n` +
+                   `- "解释波动和回撤"`;
+        }
+
+        function handleBudget(text) {
+            const match = text.match(/(\d+)元/);
+            if (match) {
+                const budget = parseInt(match[1]);
+                memory.monthlyBudget = budget;
+                updateDashboard();
+                return `✅ 已设置月度预算为 ${budget}元！`;
+            }
+            return '请告诉我预算金额，比如"设置预算3000元"~';
+        }
+
+        function handleSavingGoal(text) {
+            const match = text.match(/攒钱(.+?)目标(\d+)元/);
+            if (match) {
+                const name = match[1].trim();
+                const target = parseInt(match[2]);
+                memory.savingGoals.push({ name, target, saved: 0 });
+                updateGoals();
+                return `🎯 已创建攒钱目标：${name}，目标金额 ${target}元！\n\n我会帮你追踪进度~`;
+            }
+            if (text.includes('攒钱') || text.includes('目标')) {
+                if (memory.savingGoals.length === 0) {
+                    return '还没有设置攒钱目标哦~ 你可以说"攒钱买手机目标5000元"来创建目标！';
+                }
+                let response = '📋 你的攒钱目标：\n\n';
+                memory.savingGoals.forEach((goal, index) => {
+                    const progress = goal.target > 0 ? Math.round((goal.saved / goal.target) * 100) : 0;
+                    response += `${index + 1}. ${goal.name}: ¥${goal.saved}/${goal.target}元 (${progress}%)\n`;
+                });
+                return response;
+            }
+            return null;
+        }
+
+        function handleExpense(text) {
+            const amount = extractAmount(text);
+            if (amount === null) {
+                return '抱歉，我没找到金额信息，你可以说"买奶茶花了25元"这样的格式~';
+            }
+            
+            const category = classifyExpenseCategory(text);
+            const isEmotional = detectEmotionalSpending(text);
+            const regretProb = calculateRegretProbability(text, amount);
+            
+            memory.spentAmount += amount;
+            memory.spendingHistory.push({ amount, category, date: new Date().toISOString() });
+            
+            let response = `✅ 收到！已帮你记录${categoryLabels[category] || '生活'}支出 ¥${amount}~`;
+            
+            if (memory.monthlyBudget > 0) {
+                const percentage = (memory.spentAmount / memory.monthlyBudget) * 100;
+                const balance = memory.monthlyBudget - memory.spentAmount;
+                response += `\n\n📊 本月预算使用 ${Math.round(percentage)}%，剩余 ¥${balance.toFixed(2)}`;
+                
+                if (percentage >= 90) {
+                    response += `\n\n😱 警告！本月预算已用${Math.round(percentage)}%，再花就要吃土了！`;
+                } else if (percentage >= 70) {
+                    response += `\n\n⚠️ 提醒：本月预算已用${Math.round(percentage)}%，注意节制哦~`;
+                }
+            }
+            
+            if (isEmotional) {
+                const emotionalResponse = getEmotionalResponse(isEmotional);
+                if (emotionalResponse) {
+                    response += `\n\n${emotionalResponse}`;
+                }
+                if (isEmotional.type === 'negative' || isEmotional.type === 'boredom') {
+                    response += `\n\n💡 这次消费更像情绪驱动哦~ 下次可以试试${getAlternativeSuggestion(text)}`;
+                }
+            }
+            
+            if (regretProb.level === '高') {
+                response += `\n\n🤔 温馨提示：这次消费的后悔概率较高(${regretProb.reason})，下次可以先冷静一下再决定~`;
+            }
+            
+            if (text.includes('奶茶')) {
+                response += '\n\n😜 又喝奶茶？！你的恩格尔系数要上天啦！';
+            }
+            
+            updateDashboard();
+            return response;
+        }
+
+        function handleIncome(text) {
+            const amount = extractAmount(text);
+            if (amount === null) {
+                return '抱歉，我没找到金额信息，你可以说"兼职收入500元"这样的格式~';
+            }
+            
+            let category = '其他';
+            if (text.includes('兼职')) category = '兼职收入';
+            else if (text.includes('奖学金')) category = '奖学金';
+            else if (text.includes('生活费')) category = '生活费';
+            else if (text.includes('家教')) category = '家教收入';
+            
+            memory.incomeHistory.push({ amount, category, date: new Date().toISOString() });
+            
+            if (category === '奖学金' || category === '生活费') {
+                memory.monthlyBudget += amount;
+            }
+            
+            if (memory.savingGoals.length > 0) {
+                const remainingAmount = updateSavingGoals(amount);
+                if (remainingAmount < amount) {
+                    updateGoals();
+                }
+            }
+            
+            updateDashboard();
+            let response = `💰 收到！已记录${category} ¥${amount}~`;
+            if (category === '奖学金' || category === '生活费') {
+                response += `\n\n📊 月度预算已自动增加 ¥${amount}，当前预算：¥${memory.monthlyBudget}`;
+            }
+            return response;
+        }
+
+        function handleEmergencyFund(text) {
+            if (text.includes('存入')) {
+                const amount = extractAmount(text);
+                if (amount === null) {
+                    return '请告诉我存入金额，比如"应急金存入1000元"~';
+                }
+                memory.emergencyFund += amount;
+                updateDashboard();
+                return `🏦 已存入应急金 ¥${amount}！当前应急金余额：¥${memory.emergencyFund}`;
+            }
+            const monthlyExpense = memory.spentAmount;
+            const target = monthlyExpense * 3;
+            const progress = target > 0 ? Math.round((memory.emergencyFund / target) * 100) : 0;
+            
+            let response = `💰 应急金状态\n\n`;
+            response += `📊 当前应急金：¥${memory.emergencyFund}\n`;
+            response += `🎯 建议目标：¥${target}（3个月生活费）\n`;
+            response += `📈 完成进度：${progress}%\n\n`;
+            
+            if (progress >= 100) {
+                response += '🎉 太棒了！你的应急金已经达标！继续保持！';
+            } else if (progress >= 80) {
+                response += '🔥 差一点就完成了！再加把劲！';
+            } else if (progress >= 50) {
+                response += '💪 已经完成一半了，继续加油！';
+            } else {
+                response += '🌱 应急金是理财的第一道防线，建议从每月结余中划出一部分作为应急金哦~';
+            }
+            
+            return response;
+        }
+
+        function handleAnalysis(text) {
+            if (text.includes('月度报告') || text.includes('报告')) {
+                if (memory.spendingHistory.length === 0) {
+                    return '本月还没有消费记录哦~';
+                }
+                const total = memory.spentAmount;
+                let response = `📊 本月消费报告\n\n`;
+                response += `💰 总支出：¥${total.toFixed(2)}\n`;
+                if (memory.monthlyBudget > 0) {
+                    response += `📋 月度预算：¥${memory.monthlyBudget}\n`;
+                    response += `⚡ 剩余可用：¥${(memory.monthlyBudget - total).toFixed(2)}\n`;
+                }
+                return response;
+            }
+            if (text.includes('储蓄率')) {
+                const incomeTotal = memory.incomeHistory.reduce((sum, item) => sum + item.amount, 0);
+                const expenseTotal = memory.spentAmount;
+                const totalIncome = memory.monthlyBudget + incomeTotal;
+                if (totalIncome === 0) {
+                    return '还没有记录收入或设置预算，无法计算储蓄率~';
+                }
+                const savingRate = ((totalIncome - expenseTotal) / totalIncome * 100);
+                let response = `💹 储蓄率分析\n\n`;
+                response += `💰 月度预算：¥${memory.monthlyBudget.toFixed(2)}\n`;
+                response += `📥 额外收入：¥${incomeTotal.toFixed(2)}\n`;
+                response += `💸 本月支出：¥${expenseTotal.toFixed(2)}\n`;
+                response += `📈 本月结余：¥${(totalIncome - expenseTotal).toFixed(2)}\n`;
+                response += `🎯 储蓄率：${savingRate.toFixed(1)}%\n\n`;
+                
+                if (savingRate >= 30) {
+                    response += '🎉 太棒了！你的储蓄率超过30%，非常优秀！';
+                } else if (savingRate >= 20) {
+                    response += '👍 不错！储蓄率在20%-30%之间，继续努力！';
+                } else if (savingRate >= 10) {
+                    response += '💪 还可以，建议争取达到20%以上~';
+                } else if (savingRate >= 0) {
+                    response += '⚡ 收支基本平衡，建议减少不必要的支出~';
+                } else {
+                    response += '⚠️ 本月超支了！下个月要注意控制哦~';
+                }
+                return response;
+            }
+            if (text.includes('行为') || text.includes('洞察') || text.includes('总结') || text.includes('问题')) {
+                return getBehaviorInsights();
+            }
+            if (text.includes('模拟') || text.includes('如果') || text.includes('vs') || text.includes('对比')) {
+                return simulateFutureImpact(text);
+            }
+            if (text.includes('分析') || text.includes('趋势')) {
+                return getBehaviorInsights();
+            }
+            return null;
+        }
+        
+        function getBehaviorInsights() {
+            const history = memory.spendingHistory;
+            if (history.length === 0) {
+                return '还没有足够的消费记录来分析，多记录一些消费吧~';
+            }
+            
+            const totalSpent = history.reduce((sum, item) => sum + item.amount, 0);
+            const categories = {};
+            history.forEach(item => {
+                categories[item.category] = (categories[item.category] || 0) + item.amount;
+            });
+            
+            const sortedCategories = Object.entries(categories).sort((a, b) => b[1] - a[1]);
+            const avgSpent = totalSpent / history.length;
+            const expenseKeywords = ['奶茶', '外卖', '零食', '游戏', '购物'];
+            const emotionalCount = history.filter(item => {
+                const text = JSON.stringify(item);
+                return expenseKeywords.some(k => text.includes(k));
+            }).length;
+            
+            let insights = [];
+            let humanSummary = '';
+            
+            if (categories['food'] && categories['food'] > totalSpent * 0.5) {
+                insights.push(`🍔 餐饮支出占比${((categories['food'] / totalSpent) * 100).toFixed(1)}%，超过一半了哦~`);
+            }
+            
+            if (categories['entertainment'] && categories['entertainment'] > totalSpent * 0.3) {
+                insights.push(`🎮 娱乐支出占比${((categories['entertainment'] / totalSpent) * 100).toFixed(1)}%，有点偏高~`);
+            }
+            
+            if (avgSpent > 100) {
+                insights.push(`💸 平均单笔消费¥${avgSpent.toFixed(2)}，建议关注大额支出~`);
+            }
+            
+            if (emotionalCount > history.length * 0.3) {
+                insights.push(`😌 情绪消费占比${((emotionalCount / history.length) * 100).toFixed(1)}%，可以适当控制~`);
+            }
+            
+            const incomeTotal = memory.incomeHistory.reduce((sum, item) => sum + item.amount, 0);
+            const totalIncome = memory.monthlyBudget + incomeTotal;
+            if (totalIncome > 0) {
+                const savingRate = ((totalIncome - memory.spentAmount) / totalIncome * 100);
+                if (savingRate < 10) {
+                    insights.push(`📉 储蓄率${savingRate.toFixed(1)}%，建议增加储蓄~`);
+                } else if (savingRate >= 30) {
+                    insights.push(`🎉 储蓄率${savingRate.toFixed(1)}%，非常优秀！`);
+                }
+            }
+            
+            if (insights.length === 0) {
+                humanSummary = '🌟 你的消费习惯很健康，继续保持！';
+            } else if (insights.length === 1) {
+                humanSummary = `💡 主要需要关注：${insights[0].replace(/[🍔🎮💸😌📉🎉]/g, '')}`;
+            } else {
+                humanSummary = `⚠️ 需要关注几个方面：餐饮、娱乐支出和储蓄率都可以优化~`;
+            }
+            
+            let response = `🔍 **行为洞察报告**\n\n`;
+            response += `📊 消费概览：\n`;
+            response += `- 累计消费：¥${totalSpent.toFixed(2)}\n`;
+            response += `- 消费笔数：${history.length}笔\n`;
+            response += `- 平均单笔：¥${avgSpent.toFixed(2)}\n\n`;
+            
+            response += `📈 分类占比：\n`;
+            sortedCategories.forEach(([cat, amt]) => {
+                response += `- ${categoryLabels[cat] || cat}：¥${amt.toFixed(2)} (${((amt / totalSpent) * 100).toFixed(1)}%)\n`;
+            });
+            
+            if (insights.length > 0) {
+                response += `\n⚠️ 需要关注：\n`;
+                insights.forEach((insight, index) => {
+                    response += `${index + 1}. ${insight}\n`;
+                });
+            }
+            
+            response += `\n💬 人话总结：${humanSummary}\n`;
+            
+            return response;
+        }
+        
+        function simulateFutureImpact(text) {
+            const amount = extractAmount(text);
+            const incomeTotal = memory.incomeHistory.reduce((sum, item) => sum + item.amount, 0);
+            const totalIncome = memory.monthlyBudget + incomeTotal;
+            
+            const monthMatch = text.match(/(\d+)\s*个月?/);
+            const months = monthMatch ? parseInt(monthMatch[1]) : 12;
+            
+            if (text.includes('每月存') || (text.includes('存') && text.includes('每月'))) {
+                const saveAmount = amount || 500;
+                
+                const futureSavings = saveAmount * months;
+                const withInterest = Math.round(futureSavings * 1.03);
+                
+                const currentBalance = memory.monthlyBudget > 0 ? memory.monthlyBudget - memory.spentAmount : 0;
+                const canSave = totalIncome > 0 ? ((totalIncome - memory.spentAmount) / totalIncome * 100).toFixed(1) : 0;
+                
+                return `📊 **未来储蓄模拟**\n\n` +
+                       `假设你每月存 ¥${saveAmount}：\n\n` +
+                       `┌────────────────────────────────┐\n` +
+                       `│ 每月存${saveAmount}元 vs 不存         │\n` +
+                       `├──────────────┬───────────────┤\n` +
+                       `│ 存${months}个月   │ 不存          │\n` +
+                       `├──────────────┼───────────────┤\n` +
+                       `│ ¥${futureSavings}   │ ¥0           │\n` +
+                       `│ (含利息约¥${withInterest}) │             │\n` +
+                       `└──────────────┴───────────────┘\n\n` +
+                       `📈 增长曲线：\n` +
+                       `- 3个月：¥${saveAmount * 3}\n` +
+                       `- 6个月：¥${saveAmount * 6}\n` +
+                       `- 1年：¥${saveAmount * 12}\n\n` +
+                       `💡 这笔钱可以用来：\n` +
+                       `- 旅行一次 ✈️\n` +
+                       `- 买心仪的数码产品 📱\n` +
+                       `- 作为应急金 🏦\n` +
+                       `- 投资自己学习新技能 📚\n\n` +
+                       `🎯 当前可储蓄能力：${canSave}%`;
+            }
+            
+            if (text.includes('买') || text.includes('支出') || text.includes('花')) {
+                const spendAmount = amount || 500;
+                
+                return `📊 **消费影响模拟**\n\n` +
+                       `如果你现在花 ¥${spendAmount}：\n\n` +
+                       `┌────────────────────────────────┐\n` +
+                       `│ 买 vs 不买                      │\n` +
+                       `├──────────────┬───────────────┤\n` +
+                       `│ 买           │ 不买          │\n` +
+                       `├──────────────┼───────────────┤\n` +
+                       `│ 拥有商品     │ 保留现金¥${spendAmount} │\n` +
+                       `│ 即时满足     │ 未来选择权    │\n` +
+                       `│ 可能后悔     │ 零风险        │\n` +
+                       `└──────────────┴───────────────┘\n\n` +
+                       `⏳ 时间价值：\n` +
+                       `- 如果不买，3个月后：¥${spendAmount * 3}\n` +
+                       `- 如果用于储蓄，1年后：¥${Math.round(spendAmount * 12 * 1.03)}\n\n` +
+                       `💡 建议：如果不是必需品，可以先冷静几天再决定~`;
+            }
+            
+            return `🤔 你想模拟什么场景呢？\n\n可以试试：\n- "如果每月存500"\n- "如果花2000买手机"\n- "对比买和不买的区别"\n- "每月存1000存一年"`;
+        }
+
+        function handleStatus(text) {
+            let response = `📊 我的财务状态\n\n`;
+            response += `💰 本月支出：¥${memory.spentAmount.toFixed(2)}\n`;
+            response += `📋 月度预算：${memory.monthlyBudget > 0 ? '¥' + memory.monthlyBudget : '未设置'}\n`;
+            response += `🏦 应急金：¥${memory.emergencyFund}\n`;
+            
+            const incomeTotal = memory.incomeHistory.reduce((sum, item) => sum + item.amount, 0);
+            response += `📈 本月收入：¥${incomeTotal.toFixed(2)}\n`;
+            
+            if (memory.savingGoals.length > 0) {
+                response += `\n🎯 攒钱目标：${memory.savingGoals.length}个`;
+            }
+            
+            return response;
+        }
+
+        const friendModeResponses = {
+            greetings: [
+                '哈喽呀！最近过得怎么样？有什么我能帮你的吗？😉',
+                '嗨嗨！今天心情怎么样？要不要聊聊理财或者随便聊聊~',
+                '你好呀！又见面啦~ 今天想怎么安排你的小金库呢？',
+                '哈喽哈喽！我是你的贴心小伙伴，有什么想聊的？',
+                '嘿！最近忙什么呢？感觉你好久没来了~',
+                '今天天气真好！适合出来聊聊呀~'
+            ],
+            how_are_you: [
+                '我呀，每天都元气满满！你呢？最近有什么开心的事吗？',
+                '我状态超好！随时准备帮你管理财务~ 你今天过得怎么样？',
+                '谢谢关心！我一直都很棒！倒是你，最近攒钱计划进展如何？',
+                '我每天都活力十足！你呢？最近有没有什么新鲜事？',
+                '我很好呀！你看起来精神不错，有什么好事吗？'
+            ],
+            thanks: [
+                '不客气啦！能帮到你我很开心~ 😊',
+                '不用谢不用谢！咱们可是好朋友嘛~',
+                '小事一桩！下次有问题随时找我！',
+                '能为你服务是我的荣幸！',
+                '客气什么，咱们谁跟谁呀~'
+            ],
+            boring: [
+                '哎呀，无聊就来跟我聊天呀！我可以陪你聊聊理财，或者讲讲笑话~',
+                '无聊？那我们来规划一下你的攒钱目标吧，让生活更有动力！',
+                '来来来，我给你推荐几个好玩的理财小游戏（不是真的游戏啦）~',
+                '无聊？要不要聊聊最近的热门话题？听说最近新上映了一部电影超好看！',
+                '没事做？不如我们来复盘一下上个月的消费，找找省钱小技巧~',
+                '无聊时光正是攒钱的好时机！咱们来聊聊怎么利用碎片时间赚钱吧~'
+            ],
+            tired: [
+                '辛苦了！要注意休息哦~ 身体是革命的本钱，财务自由也要有好身体去享受！',
+                '抱抱~ 累了就歇会儿，钱可以慢慢攒，身体最重要！',
+                '理解理解，大学生活有时候确实挺累的，放松一下，明天继续加油！',
+                '累了就好好休息，别给自己太大压力，慢慢来~',
+                '抱抱你！学习工作都很辛苦，记得犒劳一下自己，但也要注意预算哦~'
+            ],
+            happy: [
+                '太棒了！分享一下是什么好事呀？🎉',
+                '开心就好！心情好的时候理财效率也会更高哦~',
+                '听到你开心我也开心！继续保持这份好心情！',
+                '哇！什么好事让你这么开心？快说来听听！',
+                '开心的事情要分享才会更开心！我准备好了~',
+                '太好了！看到你开心我也跟着开心起来了！'
+            ],
+            sad: [
+                '抱抱你~ 有什么烦心事可以跟我说说，虽然我不能解决所有问题，但可以陪你聊聊~',
+                '别难过啦！一切都会好起来的，咱们一起想办法！',
+                '摸摸头~ 生活总有起起落落，保持积极心态最重要！',
+                '怎么啦？遇到什么不开心的事了吗？说出来会好受一些~',
+                '我在呢，不管发生什么，我都愿意听你倾诉~',
+                '别太难过了，人生总有不如意，但是明天又是新的一天！'
+            ],
+            encouragement: [
+                '加油加油！你一定可以的！💪',
+                '相信自己！你的努力一定会有回报的！',
+                '冲冲冲！看好你哦！',
+                '你超棒的！不要怀疑自己！',
+                '困难只是暂时的，你一定能克服！',
+                '每一步都在靠近目标，坚持就是胜利！'
+            ],
+            casual: [
+                '哈哈，原来是这样！',
+                '有意思！',
+                '我懂我懂~',
+                '确实是这样呢！',
+                '哇，听起来很棒！',
+                '原来是这样，学到了！',
+                '哈哈，太真实了！',
+                '对对对，我也这么觉得！'
+            ],
+            campus_life: [
+                '大学生活真的很美好呢！好好珍惜这段时光~',
+                '校园里的时光总是过得很快，记得多记录美好瞬间！',
+                '上课、吃饭、社团活动...大学生活丰富多彩！',
+                '食堂的饭菜是不是又涨价了？😆',
+                '图书馆占座是不是很疯狂？',
+                '最近有没有参加什么有趣的社团活动呀？'
+            ],
+            exam_stress: [
+                '考试周确实压力很大！不过要相信自己的努力~',
+                '复习累了就歇会儿，劳逸结合效率更高！',
+                '加油！你一定可以的，考完咱们好好放松~',
+                '考试只是检验学习的方式，尽力就好！',
+                '别太紧张，保持平常心，你已经准备得很充分了！'
+            ],
+            roommates: [
+                '室友关系很重要呢，大家要互相包容~',
+                '和室友相处久了就像家人一样！',
+                '室友有没有什么有趣的故事？',
+                '宿舍夜谈会是不是每天都很精彩？',
+                '和室友一起制定省钱计划，互相监督！'
+            ],
+            food: [
+                '说到吃的我就来劲！最近发现什么好吃的了吗？',
+                '食堂哪家窗口最好吃？快推荐给我！',
+                '要不要一起研究一下怎么用有限的预算吃好喝好？',
+                '外卖虽然方便，但自己做饭更省钱哦！',
+                '听说学校附近新开了一家奶茶店，要不要去试试？'
+            ],
+            weather: [
+                '今天天气真好！适合出去走走~',
+                '下雨天最适合窝在宿舍追剧了！',
+                '天气变冷了，记得多穿点衣服！',
+                '这么热的天，来杯冰饮简直太爽了！',
+                '春天来了，要不要出去踏踏青？'
+            ],
+            movies: [
+                '最近有什么好看的电影吗？求推荐！',
+                '看电影是放松的好方式，不过记得控制预算哦~',
+                '周末约朋友一起看电影，增进感情又开心！',
+                '你喜欢什么类型的电影？我可以推荐几部！',
+                '电影院爆米花太贵了，不如自己带零食~'
+            ],
+            sports: [
+                '运动不仅能锻炼身体，还能释放压力！',
+                '最近有没有坚持运动呀？',
+                '学校的健身房人多吗？',
+                '跑步、打球、瑜伽...你最喜欢哪种运动？',
+                '运动完记得补充营养，但也要注意开销哦！'
+            ],
+            love: [
+                '谈恋爱是件美好的事情，但也要注意合理消费哦~',
+                '情人节快到了，准备给TA准备什么惊喜？',
+                '校园恋爱真的很纯粹呢，好好珍惜！',
+                '和TA一起制定攒钱计划，为未来努力！',
+                '感情最重要的是真心，不一定需要昂贵的礼物~'
+            ],
+            friendship: [
+                '朋友是人生中很宝贵的财富！',
+                '和朋友在一起总是很开心，不过聚会也要注意预算哦~',
+                '真正的朋友不会在意你有没有钱！',
+                '和朋友一起省钱，一起进步！',
+                '朋友之间互相帮助，共同成长！'
+            ],
+            future: [
+                '对未来有什么规划吗？可以一起聊聊~',
+                '大学是规划未来的好时机，好好把握！',
+                '不管未来怎么样，现在努力就对了！',
+                '攒钱也是为了实现未来的目标，加油！',
+                '未来充满无限可能，相信自己！'
+            ],
+            praise: [
+                '哇！你好厉害！👍',
+                '太棒了！我就知道你可以！',
+                '被你夸完，我感觉充满了力量！',
+                '你眼光真好！',
+                '谢谢你的认可，我会继续努力的！'
+            ],
+            comfort: [
+                '没关系的，每个人都会遇到困难~',
+                '别自责了，你已经做得很好了！',
+                '一切都会过去的，明天会更好！',
+                '我理解你的感受，别太难过~',
+                '放轻松，慢慢来，你已经很棒了！'
+            ],
+            agreement: [
+                '我完全同意！',
+                '对对对，就是这样！',
+                '英雄所见略同！',
+                '没错没错，我也这么觉得！',
+                '太对了！你说得太好了！'
+            ],
+            curiosity: [
+                '哇，真的吗？快说说！',
+                '还有这种事？太有意思了！',
+                '然后呢？后来怎么样了？',
+                '听起来很有趣！继续说~',
+                '真的假的？太神奇了！'
+            ],
+            weekend: [
+                '周末打算怎么过呀？',
+                '周末要不要约朋友出去玩？',
+                '周末是放松的好时机，好好休息！',
+                '周末可以好好规划一下下周的预算~',
+                '周末做点自己喜欢的事情，充充电！'
+            ],
+            hobby: [
+                '培养兴趣爱好是件很棒的事情！',
+                '你的爱好是什么呀？',
+                '爱好可以丰富生活，但也要注意开销哦~',
+                '有什么兴趣爱好可以分享一下吗？',
+                '坚持自己的爱好，生活会更精彩！'
+            ],
+            shopping: [
+                '买买买虽然开心，但也要理性消费哦~',
+                '有没有什么想买的东西？咱们一起看看值不值得~',
+                '购物前先问问自己：这是必需品吗？',
+                '换季购物可以等打折，能省不少钱！',
+                '网购记得货比三家，找到最划算的！'
+            ],
+            study: [
+                '学习很重要，但也要注意劳逸结合！',
+                '最近在学什么呀？',
+                '图书馆是学习的好地方，记得早点去占座！',
+                '学习累了可以休息一下，效率会更高！',
+                '知识就是财富，好好努力！'
+            ],
+            part_time: [
+                '兼职不仅能赚钱，还能积累经验！',
+                '有没有找到合适的兼职？',
+                '兼职要注意安全，不要被骗了！',
+                '合理安排时间，不要影响学习哦~',
+                '兼职赚的钱可以存起来，为未来做准备！'
+            ]
+        };
+
+        function isFinanceRelated(text) {
+            const financeKeywords = ['钱', '预算', '支出', '收入', '攒钱', '理财', '投资', '基金', '股票', '储蓄', '目标', '应急金', '消费', '花', '奖学金', '兼职'];
+            return financeKeywords.some(keyword => text.includes(keyword));
+        }
+
+        function getFriendResponse(type) {
+            const responses = friendModeResponses[type];
+            return responses[Math.floor(Math.random() * responses.length)];
+        }
+
+        function getRandomEncouragement() {
+            return getFriendResponse('encouragement');
+        }
+
+        function matchIntent(text, patterns) {
+                return patterns.some(pattern => {
+                    if (typeof pattern === 'string') {
+                        return text.includes(pattern);
+                    } else if (pattern instanceof RegExp) {
+                        return pattern.test(text);
+                    }
+                    return false;
+                });
+            }
+
+            function respond(userInput) {
+            const scamResponse = checkSensitiveWords(userInput);
+            if (scamResponse) return scamResponse;
+
+            const amount = extractAmount(userInput);
+            
+            const incomePatterns = ['收入', '收到', '兼职', '奖学金', '生活费', '工资', '发了', '家教', '挣', '赚', '获得', '拿到', '发工资', '发生活费', '兼职收入', '实习工资'];
+            if (matchIntent(userInput, incomePatterns)) {
+                return handleIncome(userInput);
+            }
+
+            const purchasePatterns = ['想买', '想花', '要不要买', '该不该买', '值得买吗', '买不买', '值得买', '该不该入手', '要不要入手', '想入手', '纠结买', '犹豫买', '买哪个', '哪个值得买'];
+            if (matchIntent(userInput, purchasePatterns)) {
+                const analysis = analyzePurchaseDecision(userInput);
+                if (analysis) {
+                    return analysis;
+                }
+                return '你想考虑买什么呀？告诉我具体物品和价格，我帮你分析一下~';
+            }
+
+            const personalityPatterns = ['人格', '画像', '类型', '消费者', '消费类型', '消费习惯', '什么样的', '是什么样', '属于哪种', '哪种类型'];
+            if (matchIntent(userInput, personalityPatterns)) {
+                return getPersonalityResponse();
+            }
+
+            const expensePatterns = ['花了', '买了', '支出', '消费', '花', '外卖', '吃饭', '奶茶', '打车', '消费了', '花费', '开销', '吃饭花', '打车花', '买东西', '购物', '消费支出'];
+            const isExpense = matchIntent(userInput, expensePatterns);
+            
+            const simulationPatterns = ['如果', '每月存', '一个月存', /存.*怎样/, /存.*会怎样/, /存.*怎么样/, '模拟', '对比', 'vs', '会怎样', '怎么样', '会如何', '效果如何', '对比一下', '比较一下'];
+            if (matchIntent(userInput, simulationPatterns)) {
+                const simulationResponse = handleAnalysis(userInput);
+                if (simulationResponse) return simulationResponse;
+            }
+
+            const goalPatterns = ['攒钱', '目标', '心愿', '存钱计划', '攒钱计划', '储蓄目标'];
+            if (matchIntent(userInput, goalPatterns)) {
+                const goalResponse = handleSavingGoal(userInput);
+                if (goalResponse) return goalResponse;
+            }
+
+            if (isExpense || (amount !== null && !matchIntent(userInput, incomePatterns) && !matchIntent(userInput, purchasePatterns) && !matchIntent(userInput, simulationPatterns))) {
+                return handleExpense(userInput);
+            }
+
+            const emergencyPatterns = ['应急金', '应急储蓄', '备用金', '紧急备用金'];
+            if (matchIntent(userInput, emergencyPatterns)) {
+                return handleEmergencyFund(userInput);
+            }
+
+            const analysisPatterns = ['分析', '报告', '趋势', '储蓄率', '消费分析', '支出分析', '财务分析'];
+            if (matchIntent(userInput, analysisPatterns)) {
+                const analysisResponse = handleAnalysis(userInput);
+                if (analysisResponse) return analysisResponse;
+            }
+
+            const stockPatterns = ['推荐股票', '买什么股票', '股票推荐', '股票投资入门', '炒股', '炒股票', '股票入门'];
+            if (matchIntent(userInput, stockPatterns)) {
+                const assessment = assessUserFinanceStage();
+                if (assessment.stage !== 'ready') {
+                    return `⚠️ **当前不适合投资股票**\n\n` +
+                           `根据你的财务状况分析：\n` +
+                           `- 当前阶段：${assessment.stage === 'overspend' ? '入不敷出' : assessment.stage === 'cashflow' ? '现金流管理中' : '应急金建立中'}\n` +
+                           `- 储蓄率：${assessment.savingRate}%\n\n` +
+                           `📋 **建议**：\n` +
+                           `${assessment.stage === 'overspend' ? '1. 先解决收支平衡问题\n2. 建立记账习惯\n3. 削减非必要开支' : assessment.stage === 'cashflow' ? '1. 把储蓄率提升到15%以上\n2. 建立预算管理\n3. 养成先存后花的习惯' : '1. 先存够1-3个月生活费作为应急金\n2. 应急金建议放在货币基金（如余额宝）\n3. 应急金达标后再考虑投资'}\n\n` +
+                           `⚠️ **风险提示**：\n` +
+                           `- 股票投资风险较高，不适合用生活费投资\n` +
+                           `- 建议先用小额资金学习或使用模拟盘\n` +
+                           `- 投资有风险，入市需谨慎！`;
+                }
+                return `📊 **股票投资入门建议**\n\n` +
+                       `作为大学生，投资股票需要谨慎！\n\n` +
+                       `⚠️ **风险提示**：\n` +
+                       `- 股票价格波动大，可能会亏损\n` +
+                       `- 不要用生活费和应急金投资\n` +
+                       `- 不建议短线投机和杠杆操作\n\n` +
+                       `📚 **学习路径**：\n` +
+                       `1. 先用模拟盘练习（很多APP都有）\n` +
+                       `2. 学习基本概念（K线、市盈率、公司财报）\n` +
+                       `3. 从指数基金开始，风险更低\n\n` +
+                       `💡 **重要提醒**：我不能推荐具体股票或预测市场走势。投资决策需要你自己做出，并承担相应风险。`;
+            }
+            
+            const financeStagePatterns = ['怎么理财', '怎样理财', '怎么开始投资', '怎样开始投资', '适不适合理财', '现在适合投资吗', '理财入门', '投资入门', '如何理财', '如何投资', '什么时候可以投资', '开始理财', '开始投资'];
+            if (matchIntent(userInput, financeStagePatterns)) {
+                const stageResponse = getFinanceStageResponse(userInput);
+                if (stageResponse) return stageResponse;
+            }
+            
+            const financeQuestionPatterns = ['解释', '什么是', '理财', '投资', '基金', '股票', '什么是理财', '什么是投资', '理财知识', '投资知识'];
+            if (matchIntent(userInput, financeQuestionPatterns)) {
+                const financeResponse = handleFinanceQuestion(userInput);
+                if (financeResponse) return financeResponse;
+            }
+            
+            const toolPatterns = ['货币基金', '指数基金', '债券基金', '定投', '分散投资', '基金定投', '指数定投'];
+            if (matchIntent(userInput, toolPatterns)) {
+                const toolResponse = explainFinanceTool(userInput);
+                if (toolResponse) return toolResponse;
+            }
+            
+            const casePatterns = ['模拟', '对比', '波动', '回撤', '模拟投资', '模拟存钱', '对比分析'];
+            if (matchIntent(userInput, casePatterns)) {
+                const simulationResponse = getSimulationCase(userInput);
+                if (simulationResponse) return simulationResponse;
+            }
+
+            const budgetPatterns = ['预算', '设置预算', '预算管理', '设定预算'];
+            if (matchIntent(userInput, budgetPatterns)) {
+                return handleBudget(userInput);
+            }
+
+            const statusPatterns = ['状态', '查询', '看看', '我的', '我的财务', '查看状态', '当前状态'];
+            if (matchIntent(userInput, statusPatterns)) {
+                return handleStatus(userInput) + getPersonalityResponse();
+            }
+
+            const greetings = ['你好', '嗨', '哈喽', 'hi', 'hello', '您好', '你好呀', '嗨嗨', '哈喽呀', '嗨喽', '嘿'];
+            if (matchIntent(userInput, greetings)) {
+                return getFriendResponse('greetings');
+            }
+
+            const howAreYouPatterns = ['你好吗', '你怎么样', '你还好吗', '最近怎么样', '最近好吗'];
+            if (matchIntent(userInput, howAreYouPatterns)) {
+                return getFriendResponse('how_are_you');
+            }
+
+            const thanksPatterns = ['谢谢', '谢谢你', '太感谢了', '感谢', '多谢', '辛苦了'];
+            if (matchIntent(userInput, thanksPatterns)) {
+                return getFriendResponse('thanks');
+            }
+
+            const boringPatterns = ['无聊', '没意思', '好无聊', '太无聊了'];
+            if (matchIntent(userInput, boringPatterns)) {
+                return getFriendResponse('boring');
+            }
+
+            const tiredPatterns = ['累', '疲惫', '好累', '太累了', '疲惫不堪'];
+            if (matchIntent(userInput, tiredPatterns)) {
+                return getFriendResponse('tired');
+            }
+
+            const happyPatterns = ['开心', '高兴', '快乐', '很开心', '太高兴了', '美滋滋', '开心极了'];
+            if (matchIntent(userInput, happyPatterns)) {
+                return getFriendResponse('happy');
+            }
+
+            const sadPatterns = ['难过', '伤心', '不开心', '心情不好', '郁闷', '沮丧'];
+            if (matchIntent(userInput, sadPatterns)) {
+                return getFriendResponse('sad');
+            }
+
+            if (userInput.includes('加油') || userInput.includes('努力')) {
+                return getRandomEncouragement();
+            }
+
+            if (userInput.includes('聊聊') || userInput.includes('聊天') || userInput.includes('说说话')) {
+                return '好呀好呀！我们来聊聊吧~ 你想聊点什么呢？可以说说你的理财目标，或者聊聊生活琐事也行！';
+            }
+
+            if (userInput.includes('要不要买') || userInput.includes('该不该买') || userInput.includes('值得买吗') || userInput.includes('买不买')) {
+                const analysis = analyzePurchaseDecision(userInput);
+                if (analysis) {
+                    return analysis;
+                }
+                return '你想考虑买什么呀？告诉我具体物品和价格，我帮你分析一下~';
+            }
+
+            if (userInput.includes('推荐') || userInput.includes('建议') || userInput.includes('怎么')) {
+                return `
+📊 作为你的理财小助手，我来给你一些建议：
+
+💡 **日常理财小贴士**：
+1. 先存后花：发生活费后先存20%-30%，剩下的再花
+2. 记账习惯：每天花1分钟记录支出
+3. 应急金：建议存3-6个月生活费
+4. 远离高风险：年化超过15%的要警惕
+
+🎯 **适合大学生的投资方式**：
+- 货币基金：风险低，流动性强
+- 指数基金定投：长期投资，分散风险
+- 国债逆回购：短期理财，安全性高
+
+⚠️ **风险提示**：
+- 不要碰校园贷、P2P等高风险产品
+- 投资有风险，入市需谨慎
+- 不要把生活费都拿去投资
+
+需要我详细解释哪一项吗？
+                `.trim();
+            }
+
+            if (userInput.includes('大学生') || userInput.includes('学生')) {
+                return `
+👨‍🎓 **大学生理财指南**
+
+**现状分析**：
+- 收入来源：生活费、兼职、奖学金
+- 消费特点：餐饮、购物、娱乐占比较高
+- 风险承受能力：较低
+
+**建议策略**：
+1. **建立预算**：每月设定消费上限
+2. **强制储蓄**：发钱后先存一部分
+3. **小额尝试**：从货币基金开始
+4. **学习为主**：先了解再投资
+
+**推荐工具**：
+- 记账APP：随手记、鲨鱼记账
+- 理财平台：支付宝、微信理财通
+- 学习资源：书本、公开课
+
+**避坑提醒**：
+⚠️ 警惕"校园贷"、"高息兼职"
+⚠️ 不盲目跟风投资
+⚠️ 保护好个人信息
+
+有具体问题可以问我哦！
+                `.trim();
+            }
+
+            if (userInput.includes('风险') || userInput.includes('安全') || userInput.includes('靠谱')) {
+                return `
+⚠️ **投资风险提示**
+
+**常见风险类型**：
+1. **市场风险**：股票、基金可能亏损
+2. **信用风险**：债券可能违约
+3. **流动性风险**：某些产品难以快速变现
+4. **诈骗风险**：高收益诱惑往往是陷阱
+
+**大学生防坑指南**：
+- ❌ 年化超过15%的承诺要警惕
+- ❌ "保本保息"往往是骗局
+- ❌ 不知名平台的理财产品要谨慎
+- ❌ 不要轻易泄露银行卡密码
+
+**风险等级参考**：
+🟢 低风险：货币基金、国债、存款
+🟡 中风险：债券基金、混合基金
+🔴 高风险：股票、期货、加密货币
+
+投资有风险，入市需谨慎！建议从低风险产品开始尝试~
+                `.trim();
+            }
+
+            if (userInput.includes('基金怎么买') || userInput.includes('如何买基金')) {
+                return `
+📈 **基金购买指南**
+
+**购买渠道**：
+1. **银行APP**：安全性高，费率可能较高
+2. **基金公司官网**：费率优惠，品种齐全
+3. **第三方平台**：支付宝、微信、天天基金等
+
+**购买步骤**：
+1. 选择平台 → 注册登录
+2. 完成实名认证
+3. 选择基金 → 输入金额
+4. 确认购买 → 等待确认
+
+**注意事项**：
+⚠️ 确认费率：申购费、赎回费、管理费
+⚠️ 了解规则：确认时间、赎回限制
+⚠️ 风险匹配：根据风险偏好选择
+
+**新手建议**：
+- 从货币基金开始熟悉流程
+- 定投比一次性买入更适合新手
+- 分散投资，不要把钱都放一只基金
+                `.trim();
+            }
+
+            if (userInput.includes('股票怎么玩') || userInput.includes('炒股')) {
+                return `
+📊 **股票投资入门**
+
+**开户流程**：
+1. 选择证券公司
+2. 下载APP → 注册开户
+3. 上传身份证 → 视频验证
+4. 绑定银行卡 → 入金
+
+**交易时间**：
+- 周一至周五 9:30-11:30, 13:00-15:00
+- 法定节假日休市
+
+**风险提示**：
+⚠️ 股票风险很高，可能亏损本金
+⚠️ 不要借钱炒股
+⚠️ 不要盲目跟风
+⚠️ 建议用闲钱投资
+
+**大学生建议**：
+- 先学习再入市
+- 小额尝试积累经验
+- 不要影响正常生活
+
+投资有风险，请谨慎决策！
+                `.trim();
+            }
+
+            if (userInput.includes('考试') || userInput.includes('复习') || userInput.includes('作业') || userInput.includes('论文')) {
+                return getFriendResponse('exam_stress');
+            }
+
+            if (userInput.includes('室友') || userInput.includes('宿舍') || userInput.includes('寝室')) {
+                return getFriendResponse('roommates');
+            }
+
+            if (userInput.includes('学校') || userInput.includes('校园') || userInput.includes('大学')) {
+                return getFriendResponse('campus_life');
+            }
+
+            if (userInput.includes('吃') || userInput.includes('饭') || userInput.includes('美食') || userInput.includes('外卖') || userInput.includes('食堂')) {
+                return getFriendResponse('food');
+            }
+
+            if (userInput.includes('天气') || userInput.includes('冷') || userInput.includes('热') || userInput.includes('下雨') || userInput.includes('晴天')) {
+                return getFriendResponse('weather');
+            }
+
+            if (userInput.includes('电影') || userInput.includes('追剧') || userInput.includes('看剧')) {
+                return getFriendResponse('movies');
+            }
+
+            if (userInput.includes('运动') || userInput.includes('跑步') || userInput.includes('打球') || userInput.includes('健身')) {
+                return getFriendResponse('sports');
+            }
+
+            if (userInput.includes('恋爱') || userInput.includes('喜欢') || userInput.includes('表白') || userInput.includes('情人节')) {
+                return getFriendResponse('love');
+            }
+
+            if (userInput.includes('朋友') || userInput.includes('友情') || userInput.includes('闺蜜') || userInput.includes('兄弟')) {
+                return getFriendResponse('friendship');
+            }
+
+            if (userInput.includes('未来') || userInput.includes('规划') || userInput.includes('毕业') || userInput.includes('工作')) {
+                return getFriendResponse('future');
+            }
+
+            if (userInput.includes('厉害') || userInput.includes('棒') || userInput.includes('优秀') || userInput.includes('聪明')) {
+                return getFriendResponse('praise');
+            }
+
+            if (userInput.includes('没关系') || userInput.includes('算了') || userInput.includes('没事') || userInput.includes('抱歉')) {
+                return getFriendResponse('comfort');
+            }
+
+            if (userInput.includes('对') || userInput.includes('没错') || userInput.includes('是的') || userInput.includes('同意')) {
+                return getFriendResponse('agreement');
+            }
+
+            if (userInput.includes('真的吗') || userInput.includes('然后呢') || userInput.includes('后来')) {
+                return getFriendResponse('curiosity');
+            }
+
+            if (userInput.includes('周末') || userInput.includes('放假') || userInput.includes('休息')) {
+                return getFriendResponse('weekend');
+            }
+
+            if (userInput.includes('爱好') || userInput.includes('兴趣') || userInput.includes('特长')) {
+                return getFriendResponse('hobby');
+            }
+
+            if (userInput.includes('买') || userInput.includes('购物') || userInput.includes('衣服') || userInput.includes('化妆品')) {
+                return getFriendResponse('shopping');
+            }
+
+            if (userInput.includes('学习') || userInput.includes('上课') || userInput.includes('图书馆') || userInput.includes('看书')) {
+                return getFriendResponse('study');
+            }
+
+            if (userInput.includes('兼职') || userInput.includes('打工') || userInput.includes('赚钱')) {
+                return getFriendResponse('part_time');
+            }
+
+            return getFriendResponse('casual') + ' 对了，如果你有理财相关的问题，我可以帮你解答哦！';
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('user-input');
+            const message = input.value.trim();
+            if (!message) return;
+
+            const container = document.getElementById('chat-container');
+            
+            const userMessage = document.createElement('div');
+            userMessage.className = 'chat-message user';
+            userMessage.textContent = message;
+            container.appendChild(userMessage);
+
+            input.value = '';
+
+            setTimeout(() => {
+                const botMessage = document.createElement('div');
+                botMessage.className = 'chat-message bot';
+                botMessage.innerHTML = respond(message).replace(/\n/g, '<br>');
+                container.appendChild(botMessage);
+                container.scrollTop = container.scrollHeight;
+            }, 300);
+        }
+
+        function updateDashboard() {
+            document.getElementById('total-spent').textContent = '¥' + memory.spentAmount.toFixed(2);
+            document.getElementById('budget').textContent = memory.monthlyBudget > 0 ? '¥' + memory.monthlyBudget : '¥0';
+            
+            if (memory.monthlyBudget > 0) {
+                const usage = (memory.spentAmount / memory.monthlyBudget * 100).toFixed(1);
+                document.getElementById('budget-usage').textContent = '已使用 ' + usage + '%';
+            }
+            
+            const incomeTotal = memory.incomeHistory.reduce((sum, item) => sum + item.amount, 0);
+            const totalIncome = memory.monthlyBudget + incomeTotal;
+            const savingRate = totalIncome > 0 ? ((totalIncome - memory.spentAmount) / totalIncome * 100).toFixed(1) : 0;
+            document.getElementById('saving-rate').textContent = savingRate + '%';
+            
+            document.getElementById('emergency-fund').textContent = '¥' + memory.emergencyFund;
+            
+            updateCategoryChart();
+        }
+
+        function updateCategoryChart() {
+            const categoryTotals = {
+                food: 0,
+                transport: 0,
+                shopping: 0,
+                entertainment: 0,
+                study: 0,
+                living: 0,
+                misc: 0
+            };
+            
+            memory.spendingHistory.forEach(record => {
+                categoryTotals[record.category] += record.amount;
+            });
+            
+            const maxAmount = Math.max(...Object.values(categoryTotals), 1);
+            
+            for (const [category, amount] of Object.entries(categoryTotals)) {
+                const bar = document.getElementById(`cat-${category}`);
+                if (bar) {
+                    const height = maxAmount > 0 ? (amount / maxAmount * 100) : 0;
+                    bar.style.height = height + '%';
+                    bar.textContent = amount > 0 ? '¥' + amount.toFixed(0) : '¥0';
+                }
+            }
+        }
+
+        function updateSavingGoals(amount) {
+            let remaining = amount;
+            for (const goal of memory.savingGoals) {
+                if (remaining <= 0) break;
+                const needed = goal.target - goal.saved;
+                const addAmount = Math.min(remaining, needed);
+                goal.saved += addAmount;
+                remaining -= addAmount;
+            }
+            return remaining;
+        }
+
+        function updateGoals() {
+            const container = document.getElementById('goals-container');
+            if (memory.savingGoals.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; opacity: 0.5;">
+                        <div class="progress-ring" style="--progress: 0%;">
+                            <div class="progress-text">
+                                <div class="progress-value">-</div>
+                                <div class="progress-label">暂无目标</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = memory.savingGoals.map(goal => {
+                const progress = goal.target > 0 ? Math.min((goal.saved / goal.target) * 100, 100) : 0;
+                return `
+                    <div style="text-align: center;">
+                        <div class="progress-ring" style="--progress: ${progress}%;">
+                            <div class="progress-text">
+                                <div class="progress-value">${Math.round(progress)}%</div>
+                                <div class="progress-label">${goal.name}</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 10px; font-size: 0.9rem; color: #666;">
+                            ¥${goal.saved}/${goal.target}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function sendQuickMessage(message) {
+            const input = document.getElementById('user-input');
+            input.value = message;
+            sendMessage();
+        }
+
+        function showBudgetModal() {
+            document.getElementById('budget-modal').style.display = 'block';
+        }
+
+        function showGoalModal() {
+            document.getElementById('goal-modal').style.display = 'block';
+        }
+
+        function showFinanceTips() {
+            document.getElementById('finance-input').value = '';
+            document.getElementById('finance-result').innerHTML = '';
+            document.getElementById('finance-suggestions').style.display = 'block';
+            
+            const hotTerms = ['公募基金', '指数基金', '定投', '复利', '股票', '债券', 'ETF', '货币基金'];
+            const grid = document.querySelector('#finance-suggestions .finance-terms-grid');
+            grid.innerHTML = hotTerms.map(term => 
+                `<button class="finance-term-btn" onclick="selectFinanceTerm('${term}')">${term}</button>`
+            ).join('');
+            
+            document.getElementById('finance-modal').style.display = 'block';
+        }
+
+        function selectFinanceTerm(term) {
+            document.getElementById('finance-input').value = term;
+            searchFinanceTerm();
+        }
+
+        function searchFinanceTerm() {
+            const input = document.getElementById('finance-input').value.trim();
+            const resultDiv = document.getElementById('finance-result');
+            document.getElementById('finance-suggestions').style.display = 'none';
+            
+            if (!input) {
+                resultDiv.innerHTML = '<p style="color: #666; text-align: center;">请输入关键词进行搜索~</p>';
+                return;
+            }
+            
+            let found = false;
+            for (const [term, explanation] of Object.entries(financeTerms)) {
+                if (term.includes(input) || input.includes(term)) {
+                    resultDiv.innerHTML = `<div class="term-explanation"><strong>${term}</strong><br>${explanation}</div>`;
+                    found = true;
+                    break;
+                }
+            }
+            
+            if (!found) {
+                const suggestions = [];
+                for (const term of Object.keys(financeTerms)) {
+                    if (term.includes(input) || input.includes(term)) {
+                        suggestions.push(term);
+                    }
+                }
+                
+                if (suggestions.length > 0) {
+                    resultDiv.innerHTML = `<p style="color: #666;">未找到"${input}"，是否想搜索：</p>`;
+                    resultDiv.innerHTML += suggestions.slice(0, 5).map(term => 
+                        `<button class="finance-term-btn" onclick="selectFinanceTerm('${term}')">${term}</button>`
+                    ).join('');
+                } else {
+                    resultDiv.innerHTML = `<p style="color: #666;">未找到相关理财知识，请尝试其他关键词~</p>`;
+                }
+            }
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function setBudget() {
+            const input = document.getElementById('budget-input');
+            const amount = parseInt(input.value);
+            if (amount && amount > 0) {
+                memory.monthlyBudget = amount;
+                updateDashboard();
+                closeModal('budget-modal');
+                input.value = '';
+                addChatMessage(`✅ 已设置月度预算为 ${amount}元！`, 'bot');
+            } else {
+                alert('请输入有效的预算金额！');
+            }
+        }
+
+        function createGoal() {
+            const name = document.getElementById('goal-name').value.trim();
+            const amount = parseInt(document.getElementById('goal-amount').value);
+            if (name && amount && amount > 0) {
+                memory.savingGoals.push({ name, target: amount, saved: 0 });
+                updateGoals();
+                closeModal('goal-modal');
+                document.getElementById('goal-name').value = '';
+                document.getElementById('goal-amount').value = '';
+                addChatMessage(`🎯 已创建攒钱目标：${name}，目标金额 ${amount}元！`, 'bot');
+            } else {
+                alert('请输入有效的目标名称和金额！');
+            }
+        }
+
+        function addChatMessage(text, type) {
+            const container = document.getElementById('chat-container');
+            const message = document.createElement('div');
+            message.className = `chat-message ${type}`;
+            message.innerHTML = text.replace(/\n/g, '<br>');
+            container.appendChild(message);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        document.getElementById('user-input').addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        window.onclick = function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target == modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

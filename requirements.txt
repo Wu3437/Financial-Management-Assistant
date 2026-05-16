@@ -1,0 +1,7 @@
+openai
+python-dotenv
+colorama
+scikit-learn
+numpy
+pandas
+flask
