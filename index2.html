@@ -598,6 +598,7 @@
                 <button class="shortcut-btn" onclick="showFinanceTips()">📚 理财知识</button>
                 <button class="shortcut-btn" onclick="sendQuickMessage('我的状态')">📊 财务状态</button>
                 <button class="shortcut-btn" onclick="sendQuickMessage('计算储蓄率')">💹 储蓄率</button>
+                <button class="shortcut-btn" onclick="clearAllData()" style="background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); color: #dc2626; border-color: #fca5a5;">🗑️ 清除数据</button>
             </div>
             <div class="chat-input">
                 <input type="text" id="user-input" placeholder="输入你的问题...">
@@ -648,6 +649,42 @@
             incomeHistory: [],
             emergencyFund: 0
         };
+
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem('financeData');
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    Object.assign(memory, data);
+                    updateDashboard();
+                    updateGoals();
+                    addChatMessage('📱 欢迎回来！已加载您的财务数据~', 'bot');
+                } catch (e) {
+                    console.error('Failed to load data:', e);
+                }
+            }
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem('financeData', JSON.stringify(memory));
+        }
+
+        function clearAllData() {
+            if (confirm('⚠️ 确定要清除所有数据吗？此操作不可恢复！')) {
+                localStorage.removeItem('financeData');
+                Object.assign(memory, {
+                    monthlyBudget: 0,
+                    spentAmount: 0,
+                    savingGoals: [],
+                    spendingHistory: [],
+                    incomeHistory: [],
+                    emergencyFund: 0
+                });
+                updateDashboard();
+                updateGoals();
+                addChatMessage('🗑️ 数据已清除，重新开始你的理财之旅吧！', 'bot');
+            }
+        }
 
         const financeTerms = {
             '公募基金': '就像和一群朋友一起拼车——大家把钱凑起来，请专业司机（基金经理）开车，一起到达目的地（赚钱）。',
@@ -2532,6 +2569,118 @@
                 '兼职要注意安全，不要被骗了！',
                 '合理安排时间，不要影响学习哦~',
                 '兼职赚的钱可以存起来，为未来做准备！'
+            ],
+            travel: [
+                '旅行真的很让人向往！你最喜欢去哪里玩？',
+                '旅行前记得做好预算规划哦~',
+                '学生党旅行可以选择性价比高的目的地！',
+                '有没有特别想去的地方？我们可以一起规划预算~',
+                '旅行不仅能放松身心，还能增长见识！',
+                '周边游也是不错的选择，省钱又方便！'
+            ],
+            music: [
+                '你最喜欢听什么类型的音乐？',
+                '音乐是最好的放松方式！',
+                '最近有什么好听的歌推荐吗？',
+                '戴上耳机，整个世界都是你的！',
+                '有没有特别喜欢的歌手或乐队？',
+                '音乐可以治愈一切，心情不好的时候听听歌吧~'
+            ],
+            books: [
+                '读书是投资自己最好的方式！',
+                '最近在读什么书？求推荐！',
+                '图书馆真是个宝藏地方，有看不完的书！',
+                '电子书和纸质书，你更喜欢哪种？',
+                '有没有哪本书对你影响很大？',
+                '阅读可以开阔视野，丰富内心世界！'
+            ],
+            tech: [
+                '数码产品更新换代真快！',
+                '最近有没有想买的数码产品？',
+                '买电子产品前一定要做好功课哦~',
+                '学生党买数码产品建议选择性价比高的！',
+                '科技改变生活，但是不要盲目追求最新款~',
+                '你最喜欢的科技品牌是什么？'
+            ],
+            health: [
+                '身体是革命的本钱，一定要好好照顾自己！',
+                '最近有没有坚持运动呀？',
+                '健康饮食很重要，少吃外卖多吃水果！',
+                '熬夜对身体不好，记得早点休息！',
+                '心理健康也很重要，有压力要及时释放！',
+                '多喝水，多运动，保持好心情！'
+            ],
+            pets: [
+                '小动物真的很可爱！你喜欢猫还是狗？',
+                '养宠物需要责任心，也要考虑经济能力哦~',
+                '学校宿舍应该不能养宠物吧？',
+                '云吸猫云养狗也是一种快乐！',
+                '宠物是人类最好的朋友！',
+                '有没有想过以后养一只宠物？'
+            ],
+            games: [
+                '游戏可以放松，但也要注意时间哦~',
+                '最近在玩什么游戏？',
+                '和朋友一起开黑真的很开心！',
+                '适度游戏益脑，沉迷游戏伤身！',
+                '有没有特别喜欢的游戏类型？',
+                '游戏里也能交到好朋友！'
+            ],
+            fashion: [
+                '穿搭也是一种艺术！',
+                '学生党穿搭讲究舒适又好看！',
+                '淘宝上有很多性价比高的衣服~',
+                '你最喜欢什么风格的穿搭？',
+                '穿搭不必追求名牌，适合自己最重要！',
+                '换季的时候可以淘一些性价比高的衣服！'
+            ],
+            social_media: [
+                '社交媒体让世界变小了！',
+                '你平时最喜欢刷哪个APP？',
+                '刷社交媒体要注意时间管理哦~',
+                '网络上的信息要学会辨别真假！',
+                '社交媒体是一把双刃剑，要合理使用！',
+                '有没有在社交媒体上认识有趣的朋友？'
+            ],
+            foodie: [
+                '美食真的让人无法抗拒！',
+                '你最喜欢吃什么菜？',
+                '自己做饭不仅健康还省钱！',
+                '学校附近有没有特别好吃的餐馆？',
+                '有没有什么菜是你特别想学做的？',
+                '民以食为天，吃好喝好最重要！'
+            ],
+            hobbies: [
+                '兴趣爱好可以让生活更精彩！',
+                '除了学习，你还有什么爱好？',
+                '培养一个爱好可以让生活更有乐趣！',
+                '你的爱好有没有什么特别的故事？',
+                '兴趣爱好可以成为生活的调味剂！',
+                '坚持自己的爱好，生活会更充实！'
+            ],
+            funny: [
+                '哈哈，你真有趣！',
+                '这个笑话太棒了！',
+                '笑死我了！',
+                '你是段子手吗？',
+                '快乐最重要，每天都要开开心心的！',
+                '幽默是生活的调味剂！'
+            ],
+            travel_plans: [
+                '计划一次旅行吧！',
+                '旅行预算规划好了吗？',
+                '说走就走的旅行真的很让人向往！',
+                '旅行前记得查好攻略！',
+                '和朋友一起旅行会更有趣！',
+                '旅行可以让人放松心情，开阔眼界！'
+            ],
+            school_events: [
+                '学校最近有什么活动吗？',
+                '社团活动真的很丰富多彩！',
+                '参加活动可以认识很多新朋友！',
+                '有没有什么活动特别想参加？',
+                '大学活动真的很多，要好好珍惜！',
+                '参加活动不仅能锻炼能力，还能丰富简历！'
             ]
         };
 
@@ -2938,6 +3087,62 @@
                 return getFriendResponse('part_time');
             }
 
+            if (userInput.includes('旅行') || userInput.includes('旅游') || userInput.includes('出去玩') || userInput.includes('景点')) {
+                return getFriendResponse('travel');
+            }
+
+            if (userInput.includes('音乐') || userInput.includes('歌') || userInput.includes('听歌') || userInput.includes('唱歌')) {
+                return getFriendResponse('music');
+            }
+
+            if (userInput.includes('书') || userInput.includes('读书') || userInput.includes('阅读') || userInput.includes('图书馆')) {
+                return getFriendResponse('books');
+            }
+
+            if (userInput.includes('数码') || userInput.includes('手机') || userInput.includes('电脑') || userInput.includes('科技')) {
+                return getFriendResponse('tech');
+            }
+
+            if (userInput.includes('健康') || userInput.includes('身体') || userInput.includes('运动') || userInput.includes('熬夜')) {
+                return getFriendResponse('health');
+            }
+
+            if (userInput.includes('宠物') || userInput.includes('猫') || userInput.includes('狗') || userInput.includes('小动物')) {
+                return getFriendResponse('pets');
+            }
+
+            if (userInput.includes('游戏') || userInput.includes('玩游戏') || userInput.includes('开黑') || userInput.includes('手游')) {
+                return getFriendResponse('games');
+            }
+
+            if (userInput.includes('穿搭') || userInput.includes('衣服') || userInput.includes('时尚') || userInput.includes('风格')) {
+                return getFriendResponse('fashion');
+            }
+
+            if (userInput.includes('抖音') || userInput.includes('微博') || userInput.includes('小红书') || userInput.includes('社交媒体')) {
+                return getFriendResponse('social_media');
+            }
+
+            if (userInput.includes('美食') || userInput.includes('好吃的') || userInput.includes('做饭') || userInput.includes('餐厅')) {
+                return getFriendResponse('foodie');
+            }
+
+            if (userInput.includes('爱好') || userInput.includes('兴趣') || userInput.includes('特长') || userInput.includes('喜欢做')) {
+                return getFriendResponse('hobbies');
+            }
+
+            if (userInput.includes('哈哈') || userInput.includes('笑死') || userInput.includes('有趣') || userInput.includes('搞笑')) {
+                return getFriendResponse('funny');
+            }
+
+            if (userInput.includes('计划') || userInput.includes('安排') || userInput.includes('打算') || userInput.includes('准备')) {
+                return getFriendResponse('travel_plans');
+            }
+
+            if (userInput.includes('活动') || userInput.includes('社团') || userInput.includes('晚会') || userInput.includes('比赛')) {
+                return getFriendResponse('school_events');
+            }
+
             return getFriendResponse('casual') + ' 对了，如果你有理财相关的问题，我可以帮你解答哦！';
         }
 
@@ -2981,6 +3186,7 @@
             document.getElementById('emergency-fund').textContent = '¥' + memory.emergencyFund;
             
             updateCategoryChart();
+            saveToLocalStorage();
         }
 
         function updateCategoryChart() {
@@ -3183,6 +3389,10 @@
                 }
             });
         }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadFromLocalStorage();
+        });
     </script>
 </body>
 </html>
