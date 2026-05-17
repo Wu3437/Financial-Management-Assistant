@@ -256,6 +256,26 @@
             border-radius: 3px;
         }
 
+        .mode-indicator {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .mode-indicator.friend-mode {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            color: #1d4ed8;
+            border: 1px solid #93c5fd;
+        }
+        
+        .mode-indicator.expert-mode {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            color: #166534;
+            border: 1px solid #86efac;
+        }
+
         .chat-message {
             max-width: 80%;
             padding: 15px 20px;
@@ -587,7 +607,10 @@
         </div>
 
         <div class="chat-section">
-            <h2 class="section-title">💬 智能对话</h2>
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <h2 class="section-title">💬 智能对话</h2>
+                <span id="mode-indicator" class="mode-indicator friend-mode">👫 知心朋友</span>
+            </div>
             <div class="chat-container" id="chat-container">
                 <div class="chat-message bot">你好！我是财智通，有什么可以帮到你吗？</div>
                 <div class="chat-message bot">📖 你可以尝试：<br>- 记录消费："吃饭花了20元"<br>- 设置预算："设置预算3000元"<br>- 创建目标："攒钱买手机目标5000元"<br>- 理财知识："什么是公募基金"</div>
@@ -1037,9 +1060,11 @@
                 if (emotionalResponse) {
                     response += `\n${emotionalResponse}\n`;
                 }
-                if (isEmotional.type === 'negative' || isEmotional.type === 'boredom') {
+                const negativeEmotions = ['stress', 'anxiety', 'sadness', 'anger', 'loneliness', 'boredom'];
+                if (negativeEmotions.includes(isEmotional.type)) {
                     response += `\n💡 情绪消费提醒：这更像情绪驱动消费\n`;
-                    response += `   替代方案：${getAlternativeSuggestion(text)}\n`;
+                    response += `   当前情绪：${isEmotional.label}\n`;
+                    response += `   替代方案：${getAlternativeSuggestion(text, isEmotional.type)}\n`;
                     response += `   或许可以先冷静一下，再决定是否真的需要~`;
                 }
             }
@@ -1315,23 +1340,55 @@
         }
 
         function detectEmotionalSpending(text) {
-            const negativeEmotions = ['压力', '心情不好', '难过', '郁闷', '烦躁', '伤心', '沮丧', '失落', '焦虑', '烦躁'];
-            const positiveEmotions = ['开心', '高兴', '快乐', '幸福', '庆祝', '兴奋', '满足', '愉快'];
-            const rewardEmotions = ['奖励自己', '犒劳自己', '慰劳自己'];
-            const boredomEmotions = ['无聊', '没事做', '打发时间', '闲得慌'];
+            const emotionPatterns = {
+                stress: {
+                    keywords: ['压力', '压力大', '好累', '疲惫', '累', '疲惫不堪', '精疲力尽', '心力交瘁', '压力好大', '压力山大'],
+                    label: '压力'
+                },
+                anxiety: {
+                    keywords: ['焦虑', '担心', '不安', '紧张', '害怕', '恐惧', '忐忑', '心慌', '烦躁', '焦躁'],
+                    label: '焦虑'
+                },
+                sadness: {
+                    keywords: ['难过', '伤心', '悲伤', '心碎', '沮丧', '失落', '失望', '绝望', '想哭', '郁闷'],
+                    label: '悲伤'
+                },
+                anger: {
+                    keywords: ['生气', '愤怒', '火大', '气死了', '烦躁', '恼怒', '不满', '不爽'],
+                    label: '愤怒'
+                },
+                loneliness: {
+                    keywords: ['孤单', '孤独', '寂寞', '没人陪', '无聊', '没意思', '无聊死了', '闲得慌', '没人说话'],
+                    label: '孤独'
+                },
+                happy: {
+                    keywords: ['开心', '高兴', '快乐', '幸福', '兴奋', '激动', '喜悦', '满足', '愉快', '美滋滋', '乐呵呵'],
+                    label: '开心'
+                },
+                excited: {
+                    keywords: ['兴奋', '激动', '期待', '迫不及待', '热血沸腾', '心潮澎湃'],
+                    label: '兴奋'
+                },
+                reward: {
+                    keywords: ['奖励自己', '犒劳自己', '慰劳自己', '奖励一下', '犒劳一下', '对自己好点'],
+                    label: '奖励自己'
+                },
+                celebration: {
+                    keywords: ['庆祝', '恭喜', '纪念日', '生日', '过节', '节日', '放假', '假期'],
+                    label: '庆祝'
+                },
+                boredom: {
+                    keywords: ['无聊', '没事做', '打发时间', '闲得慌', '没意思', '太无聊了', '好无聊'],
+                    label: '无聊'
+                }
+            };
             
-            if (negativeEmotions.some(k => text.includes(k))) {
-                return { type: 'negative', label: '消极情绪' };
+            for (const [type, pattern] of Object.entries(emotionPatterns)) {
+                if (pattern.keywords.some(k => text.includes(k))) {
+                    return { type, label: pattern.label, keywords: pattern.keywords.filter(k => text.includes(k)) };
+                }
             }
-            if (positiveEmotions.some(k => text.includes(k))) {
-                return { type: 'positive', label: '积极情绪' };
-            }
-            if (rewardEmotions.some(k => text.includes(k))) {
-                return { type: 'reward', label: '奖励消费' };
-            }
-            if (boredomEmotions.some(k => text.includes(k))) {
-                return { type: 'boredom', label: '无聊消费' };
-            }
+            
             return null;
         }
 
@@ -1339,49 +1396,146 @@
             if (!emotion) return null;
             
             const responses = {
-                positive: [
-                    '🎉 太棒了！开心的时候就该好好享受~',
-                    '😊 看到你开心我也很开心！',
-                    '✨ 心情好的时候消费也是一种快乐！',
-                    '🎊 恭喜恭喜！好好庆祝一下吧~',
-                    '😄 快乐最重要，偶尔犒劳自己是应该的！'
+                stress: [
+                    '😰 压力大的时候确实容易想通过消费来缓解~',
+                    '💆 要不要试试深呼吸放松一下？',
+                    '🌿 压力大的时候可以试试冥想或运动哦！',
+                    '📝 不如先把压力写下来，说不定会好很多~',
+                    '🚶 出去走走吧，换个环境可能会好一些！',
+                    '☕ 泡杯茶或咖啡，给自己一点放松的时间~'
                 ],
-                negative: [
-                    '😔 怎么啦？有什么烦心事可以跟我说说~',
-                    '💝 别难过，一切都会好起来的！',
-                    '🤗 抱抱~ 要不要聊聊天放松一下？',
-                    '🌧️ 阴天总会过去，晴天就在前方！',
-                    '💪 加油！你不是一个人在战斗！'
+                anxiety: [
+                    '😟 别担心，一切都会慢慢好起来的~',
+                    '🧘 深呼吸，让自己平静下来~',
+                    '💭 把担心的事情写下来，也许没那么可怕！',
+                    '🌟 相信自己，你一定可以的！',
+                    '🌼 焦虑的时候可以试试听一些舒缓的音乐~'
+                ],
+                sadness: [
+                    '😢 抱抱你~ 有什么不开心的可以跟我说说！',
+                    '💝 别难过，我一直在你身边~',
+                    '🌈 风雨过后总会有彩虹的！',
+                    '🌸 出去晒晒太阳，心情会好很多~',
+                    '📞 找朋友聊聊天吧，倾诉一下会好很多！'
+                ],
+                anger: [
+                    '😤 生气的时候先冷静一下再做决定哦！',
+                    '🌊 深呼吸，让愤怒像海浪一样退去~',
+                    '🥊 可以试试打拳击或者跑步发泄一下！',
+                    '🍵 喝杯茶冷静一下，冲动消费要不得~'
+                ],
+                loneliness: [
+                    '🥺 孤单的时候确实容易想购物~',
+                    '👭 约朋友出来聚聚吧！',
+                    '🐱 撸猫撸狗治愈一下~',
+                    '📱 给好朋友打个电话聊聊天！',
+                    '🌳 去公园走走，看看人间烟火气~'
+                ],
+                happy: [
+                    '😄 看到你开心我也超开心！',
+                    '🎉 太棒了！好好享受这份快乐~',
+                    '✨ 心情好的时候做什么都顺！',
+                    '🎊 继续保持这份好心情哦！',
+                    '🌈 愿快乐永远伴随你！'
+                ],
+                excited: [
+                    '🤩 好兴奋呀！期待你的好消息！',
+                    '🔥 热血沸腾的感觉真好！',
+                    '🚀 冲鸭！祝你一切顺利！',
+                    '💥 太激动了！好好享受这一刻！'
                 ],
                 reward: [
                     '🎁 奖励自己是应该的！辛苦了！',
                     '🌟 好好犒劳一下自己吧~',
                     '💖 对自己好一点！',
-                    '🎉 庆祝一下，继续加油！'
+                    '🎉 庆祝一下，继续加油！',
+                    '🍾 干杯！为你的努力干杯！'
+                ],
+                celebration: [
+                    '🎊 恭喜恭喜！好好庆祝一下！',
+                    '🎉 太棒了！值得庆祝！',
+                    '🎂 开派对啦！',
+                    '🍾 举杯庆祝！'
                 ],
                 boredom: [
                     '😴 无聊了吗？不如找点有趣的事情做~',
                     '📚 可以看看书或者追追剧哦！',
                     '👫 约朋友出去玩玩吧！',
-                    '🎮 玩会儿游戏放松一下~'
+                    '🎮 玩会儿游戏放松一下~',
+                    '🎨 做点手工或者画画也不错！',
+                    '🧩 拼图或者下棋也是很好的选择！'
                 ]
             };
             
             const responseList = responses[emotion.type];
             if (responseList) {
-                return responseList[Math.floor(Math.random() * responseList.length)];
+                return `${responseList[Math.floor(Math.random() * responseList.length)]}`;
             }
             return null;
         }
 
-        function getAlternativeSuggestion(text) {
-            const suggestions = [
+        function getAlternativeSuggestion(text, emotionType = null) {
+            const suggestionsByEmotion = {
+                stress: [
+                    '试试深呼吸练习，缓解一下压力~',
+                    '做一些简单的拉伸运动放松身体！',
+                    '泡一杯热茶或咖啡，给自己一点休息时间~',
+                    '听一些舒缓的音乐放松心情！',
+                    '写下来压力来源，也许会豁然开朗~',
+                    '短暂离开当前环境，出去走走~'
+                ],
+                anxiety: [
+                    '试试冥想或正念练习，让内心平静~',
+                    '把担心的事情写下来，会感觉好很多！',
+                    '听一些白噪音或自然声音~',
+                    '做一些深呼吸，慢慢放松~',
+                    '和信任的朋友聊聊天，倾诉一下~'
+                ],
+                sadness: [
+                    '找朋友或家人聊聊天，不要独自承受~',
+                    '看一部治愈的电影或纪录片~',
+                    '出去晒晒太阳，感受温暖~',
+                    '听一些积极向上的音乐！',
+                    '做点喜欢的事情转移注意力~',
+                    '给自己一个大大的拥抱！'
+                ],
+                anger: [
+                    '先冷静10分钟再做决定！',
+                    '试试拳击或跑步发泄一下！',
+                    '深呼吸，数到10再说话~',
+                    '喝杯水冷静一下~',
+                    '暂时离开让你生气的环境~'
+                ],
+                loneliness: [
+                    '约朋友出来聚聚！',
+                    '给好朋友打个电话聊聊天！',
+                    '去公园或咖啡馆感受人气~',
+                    '养个宠物或植物陪伴你~',
+                    '参加一些兴趣小组活动！'
+                ],
+                boredom: [
+                    '看一本有趣的书！',
+                    '追一部期待已久的剧~',
+                    '学一道新菜或做点手工！',
+                    '玩会儿游戏或拼图~',
+                    '约朋友出去玩！',
+                    '出去散步或跑步！'
+                ]
+            };
+            
+            const defaultSuggestions = [
                 '可以试试做点喜欢的运动放松一下~',
                 '不如和朋友聊聊天，心情会好很多！',
                 '看一部喜欢的电影也是不错的选择~',
                 '出去散散步，呼吸新鲜空气吧！',
-                '泡一杯热茶，好好休息一下~'
+                '泡一杯热茶，好好休息一下~',
+                '听一些喜欢的音乐放松一下！'
             ];
+            
+            const suggestions = emotionType && suggestionsByEmotion[emotionType] 
+                ? suggestionsByEmotion[emotionType] 
+                : defaultSuggestions;
+            
             return suggestions[Math.floor(Math.random() * suggestions.length)];
         }
 
@@ -2749,6 +2903,99 @@
                 if (goalResponse) return goalResponse;
             }
 
+            const budgetAdjustPatterns = ['预算', '调整预算', '设置预算', '修改预算', '预算调整', '预算增加', '预算减少', '增加预算', '减少预算', '预算为', '预算设为'];
+            if (matchIntent(userInput, budgetAdjustPatterns)) {
+                let match;
+                match = userInput.match(/(调整预算为|预算调整为|设置预算为|预算设为|预算改为|把预算改成|预算为)(\d+)元?/);
+                if (match) {
+                    const budget = parseInt(match[2]);
+                    memory.monthlyBudget = budget;
+                    updateDashboard();
+                    return `✅ 已调整月度预算为 ${budget}元！`;
+                }
+                match = userInput.match(/(预算增加|增加预算|预算\+)(\d+)元?/);
+                if (match) {
+                    const addAmount = parseInt(match[2]);
+                    memory.monthlyBudget += addAmount;
+                    updateDashboard();
+                    return `✅ 已增加预算 ${addAmount}元！当前预算为 ${memory.monthlyBudget}元~`;
+                }
+                match = userInput.match(/(预算减少|减少预算|预算\-)(\d+)元?/);
+                if (match) {
+                    const subAmount = parseInt(match[2]);
+                    memory.monthlyBudget = Math.max(0, memory.monthlyBudget - subAmount);
+                    updateDashboard();
+                    return `✅ 已减少预算 ${subAmount}元！当前预算为 ${memory.monthlyBudget}元~`;
+                }
+                match = userInput.match(/预算(\d+)元?/);
+                if (match && !userInput.includes('支出') && !userInput.includes('花费') && !userInput.includes('花了')) {
+                    const budget = parseInt(match[1]);
+                    memory.monthlyBudget = budget;
+                    updateDashboard();
+                    return `✅ 已设置月度预算为 ${budget}元！`;
+                }
+            }
+
+            const goalAdjustPatterns = ['目标增加', '目标减少', '删除目标', '创建目标', '添加目标', '修改目标', '目标修改', '目标调整', '调整目标', '目标金额', '攒钱目标'];
+            if (matchIntent(userInput, goalAdjustPatterns)) {
+                let match;
+                match = userInput.match(/(创建目标|新建目标|添加目标|增加目标)(.+?)(\d+)元?/);
+                if (match) {
+                    const name = match[2].trim();
+                    const target = parseInt(match[3]);
+                    memory.savingGoals.push({ name, target, saved: 0 });
+                    updateGoals();
+                    return `🎯 已创建攒钱目标：${name}，目标金额 ${target}元！`;
+                }
+                match = userInput.match(/(目标增加|增加目标|目标\+)(.+?)(\d+)元?/);
+                if (match) {
+                    const name = match[2].trim();
+                    const addAmount = parseInt(match[3]);
+                    const goal = memory.savingGoals.find(g => g.name.includes(name) || name.includes(g.name));
+                    if (goal) {
+                        goal.target += addAmount;
+                        updateGoals();
+                        return `✅ 已增加目标"${goal.name}"金额 ${addAmount}元！新目标为 ${goal.target}元~`;
+                    }
+                    return `找不到目标"${name}"，请检查目标名称是否正确~`;
+                }
+                match = userInput.match(/(目标减少|减少目标|目标\-)(.+?)(\d+)元?/);
+                if (match) {
+                    const name = match[2].trim();
+                    const subAmount = parseInt(match[3]);
+                    const goal = memory.savingGoals.find(g => g.name.includes(name) || name.includes(g.name));
+                    if (goal) {
+                        goal.target = Math.max(goal.saved, goal.target - subAmount);
+                        updateGoals();
+                        return `✅ 已减少目标"${goal.name}"金额 ${subAmount}元！新目标为 ${goal.target}元~`;
+                    }
+                    return `找不到目标"${name}"，请检查目标名称是否正确~`;
+                }
+                match = userInput.match(/(删除目标|移除目标|删掉目标|取消目标)(.+)/);
+                if (match) {
+                    const name = match[2].trim();
+                    const index = memory.savingGoals.findIndex(g => g.name.includes(name) || name.includes(g.name));
+                    if (index !== -1) {
+                        const deleted = memory.savingGoals.splice(index, 1)[0];
+                        updateGoals();
+                        return `🗑️ 已删除目标"${deleted.name}"~`;
+                    }
+                    return `找不到目标"${name}"，请检查目标名称是否正确~`;
+                }
+                match = userInput.match(/(修改目标|调整目标)(.+?)为(\d+)元?/);
+                if (match) {
+                    const name = match[2].trim();
+                    const newTarget = parseInt(match[3]);
+                    const goal = memory.savingGoals.find(g => g.name.includes(name) || name.includes(g.name));
+                    if (goal) {
+                        goal.target = Math.max(goal.saved, newTarget);
+                        updateGoals();
+                        return `✅ 已修改目标"${goal.name}"金额为 ${goal.target}元！`;
+                    }
+                    return `找不到目标"${name}"，请检查目标名称是否正确~`;
+                }
+            }
+
             if (isExpense || (amount !== null && !matchIntent(userInput, incomePatterns) && !matchIntent(userInput, purchasePatterns) && !matchIntent(userInput, simulationPatterns))) {
                 return handleExpense(userInput);
             }
@@ -2859,6 +3106,18 @@
             const sadPatterns = ['难过', '伤心', '不开心', '心情不好', '郁闷', '沮丧'];
             if (matchIntent(userInput, sadPatterns)) {
                 return getFriendResponse('sad');
+            }
+
+            const emotion = detectEmotionalSpending(userInput);
+            if (emotion) {
+                const response = getEmotionalResponse(emotion);
+                if (response) {
+                    const negativeEmotions = ['stress', 'anxiety', 'sadness', 'anger', 'loneliness', 'boredom'];
+                    if (negativeEmotions.includes(emotion.type)) {
+                        return `${response}\n\n💡 有什么我可以帮你的吗？无论是理财问题还是想聊聊心事~`;
+                    }
+                    return response;
+                }
             }
 
             if (userInput.includes('加油') || userInput.includes('努力')) {
@@ -3146,10 +3405,26 @@
             return getFriendResponse('casual') + ' 对了，如果你有理财相关的问题，我可以帮你解答哦！';
         }
 
+        function updateModeIndicator(message) {
+            const financeKeywords = ['预算', '支出', '收入', '攒钱', '理财', '基金', '股票', '投资', '消费', '记账', '储蓄', '目标', '应急金', '储蓄率', '分析', '报告', '风险', '评估', '贷款', '信用卡', '花呗', '借呗', '花了', '花了', '花费', '买', '购物', '账单', '金额', '多少钱', '价格', '贵', '便宜', '划算', '省钱', '花钱', '饭钱', '餐费', '消费记录'];
+            const isFinanceRelated = financeKeywords.some(keyword => message.includes(keyword));
+            
+            const indicator = document.getElementById('mode-indicator');
+            if (isFinanceRelated) {
+                indicator.textContent = '👔 专业顾问';
+                indicator.className = 'mode-indicator expert-mode';
+            } else {
+                indicator.textContent = '👫 知心朋友';
+                indicator.className = 'mode-indicator friend-mode';
+            }
+        }
+
         function sendMessage() {
             const input = document.getElementById('user-input');
             const message = input.value.trim();
             if (!message) return;
+
+            updateModeIndicator(message);
 
             const container = document.getElementById('chat-container');
             
